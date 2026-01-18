@@ -491,7 +491,6 @@
     <div id="canvas">
       <div style="position: absolute; top: 10px; left: 20px; text-align: left; opacity: 0.7; pointer-events: none; z-index: 1;">
         <div style="font-size: 14px; color: #aaa;">Hold to delete move</div>
-        <div style="font-size: 14px; color: #aaa; margin-top: 4px;">Double click to open up a move</div>
       </div>
       <svg id="lines-layer">
         <defs>
@@ -511,7 +510,7 @@
         <div class="move"
              data-id="{{ move.id }}"
              style="left: {{ move.x }}px; top: {{ move.y }}px;">
-          <span class="move-name" ondblclick="openMoveProfile('{{ move.name }}')">{{ move.name }}</span>
+          <span class="move-name" onclick="handleMoveClick(event, '{{ move.name }}')">{{ move.name }}</span>
           <span class="delete-move-btn" onclick="deleteMove(event, {{ move.id }})" title="Delete move">×</span>
         </div>
       {% endfor %}
@@ -520,6 +519,63 @@
     <script>
         const moveProfiles = {{ move_profiles | tojson }};
         const currentMapId = {{ current_map_id }};
+        let clickedMove = null;
+        let clickPopup = null;
+
+        function handleMoveClick(event, moveName) {
+            event.stopPropagation();
+            
+            if (clickedMove === moveName) {
+                // Second click - open the move
+                removeClickPopup();
+                openMoveProfile(moveName);
+                clickedMove = null;
+            } else {
+                // First click - show popup
+                clickedMove = moveName;
+                showClickPopup();
+                
+                // Auto-hide after 3 seconds
+                setTimeout(() => {
+                    if (clickedMove === moveName) {
+                        removeClickPopup();
+                        clickedMove = null;
+                    }
+                }, 3000);
+            }
+        }
+
+        function showClickPopup() {
+            removeClickPopup();
+            clickPopup = document.createElement('div');
+            clickPopup.style.position = 'fixed';
+            clickPopup.style.bottom = '20px';
+            clickPopup.style.left = '20px';
+            clickPopup.style.background = '#0066cc';
+            clickPopup.style.color = 'white';
+            clickPopup.style.padding = '12px 20px';
+            clickPopup.style.borderRadius = '6px';
+            clickPopup.style.fontSize = '14px';
+            clickPopup.style.zIndex = '10000';
+            clickPopup.style.boxShadow = '0 4px 6px rgba(0,0,0,0.3)';
+            clickPopup.textContent = 'Click to open move';
+            document.body.appendChild(clickPopup);
+        }
+
+        function removeClickPopup() {
+            if (clickPopup) {
+                clickPopup.remove();
+                clickPopup = null;
+            }
+        }
+
+        // Clear clicked move when clicking elsewhere
+        document.addEventListener('click', function(e) {
+            if (!e.target.classList.contains('move-name')) {
+                clickedMove = null;
+                removeClickPopup();
+            }
+        });
 
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');

@@ -87,7 +87,6 @@ document.querySelectorAll(".move").forEach(move => {
   let progressDial = null;
   let hasMoved = false;
   let startX = 0, startY = 0;
-  let lastTap = 0;
 
   // Helper to get position from mouse or touch event
   function getEventPosition(e) {
@@ -160,18 +159,6 @@ document.querySelectorAll(".move").forEach(move => {
     const pos = getEventPosition(e);
     startX = pos.clientX;
     startY = pos.clientY;
-
-    // Handle double-tap on mobile
-    const currentTime = new Date().getTime();
-    const tapLength = currentTime - lastTap;
-    if (tapLength < 500 && tapLength > 0) {
-      // Double tap detected
-      e.preventDefault();
-      const moveName = move.querySelector('.move-name').textContent;
-      openMoveProfile(moveName);
-      return;
-    }
-    lastTap = currentTime;
     
     if (connectMode) {
       // Connect mode: select moves to connect
@@ -225,7 +212,7 @@ document.querySelectorAll(".move").forEach(move => {
             // Remove from map (hide it)
             move.style.display = 'none';
             dragging = false;
-          }, 2500); // 2.5 more seconds after popup shows (3s total)
+          }, 1500); // 1.5 more seconds after popup shows (2s total)
         }
       }, 500);
     }
