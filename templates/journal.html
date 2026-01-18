@@ -529,6 +529,18 @@
             hamburger.classList.toggle('active');
         }
 
+        // Close sidebar when clicking outside
+        document.addEventListener('click', (e) => {
+            const sidebar = document.getElementById('sidebar');
+            const hamburger = document.querySelector('.hamburger');
+            
+            if (sidebar.classList.contains('open') && 
+                !sidebar.contains(e.target) && 
+                !hamburger.contains(e.target)) {
+                toggleSidebar();
+            }
+        });
+
         function showEntry(index) {
             const entry = entries[index];
             document.getElementById('modalTime').textContent = entry.timestamp;

@@ -227,8 +227,15 @@ document.querySelectorAll(".move").forEach(move => {
             const isDeleteMode = modeBtn && modeBtn.textContent === 'Delete Mode';
             
             if (isDeleteMode) {
-              // Delete the move
-              move.remove();
+              // Delete the move from the database
+              const moveId = move.dataset.id;
+              fetch('/delete_move', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ move_id: moveId })
+              }).then(() => {
+                move.remove();
+              });
             } else {
               // Open move profile (navigate like a link)
               const moveName = move.querySelector('.move-name').textContent;
