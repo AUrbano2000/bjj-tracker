@@ -9,6 +9,9 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BJJ Tracker">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="application-name" content="BJJ Tracker">
+    <meta name="msapplication-TileColor" content="#0066cc">
     <style>
         * {
             margin: 0;
@@ -584,13 +587,6 @@
                 });
         }
 
-        // Ensure textarea focuses on click (Safari converts touch to click)
-        const textarea = document.querySelector('textarea[name="content"]');
-        if (textarea) {
-            textarea.addEventListener('click', function() {
-                this.focus();
-            });
-        }
 
         function renderCalendar() {
             const now = new Date();
