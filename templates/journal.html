@@ -563,12 +563,6 @@
             }
         }
 
-        // Ensure textarea focuses on mobile tap
-        document.querySelector('textarea[name="content"]').addEventListener('touchstart', function(e) {
-            e.stopPropagation();
-            this.focus();
-        }, { passive: false });
-
         function loadCheckIns() {
             fetch('/get_check_ins')
                 .then(res => res.json())

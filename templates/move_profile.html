@@ -438,12 +438,6 @@
                 showSuccess();
             }, 100);
         });
-
-        // Ensure textarea focuses on mobile tap
-        document.querySelector('textarea[name="notes"]').addEventListener('touchstart', function(e) {
-            e.stopPropagation();
-            this.focus();
-        }, { passive: false });
     </script>
 </body>
 </html>

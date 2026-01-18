@@ -251,6 +251,12 @@ document.querySelectorAll(".move").forEach(move => {
 
   function handleMove(e) {
     if (!dragging) return;
+    
+    // Don't interfere with form elements
+    if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') {
+      return;
+    }
+    
     e.preventDefault();
 
     const pos = getEventPosition(e);
