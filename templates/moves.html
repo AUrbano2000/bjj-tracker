@@ -361,6 +361,68 @@
         background: #0066cc;
         border-color: #0066cc;
       }
+
+      /* Mobile Responsive */
+      @media (max-width: 768px) {
+        header {
+          padding: 15px 15px 15px 60px;
+        }
+
+        header h2 {
+          font-size: 18px;
+        }
+
+        #moveInput {
+          max-width: 180px;
+          font-size: 14px;
+          padding: 6px 10px;
+        }
+
+        button {
+          padding: 6px 12px;
+          font-size: 14px;
+        }
+
+        .sidebar {
+          width: 280px;
+          left: -280px;
+          padding: 70px 15px 15px 15px;
+        }
+
+        .sidebar.open {
+          left: 0;
+        }
+
+        .mode-indicator {
+          top: 5px;
+          right: 5px;
+          padding: 6px 10px;
+          font-size: 12px;
+        }
+
+        .top-nav {
+          top: 35px;
+          right: 5px;
+        }
+
+        .nav-button {
+          padding: 8px 14px;
+          font-size: 12px;
+        }
+
+        .move {
+          padding: 8px 12px;
+          font-size: 14px;
+        }
+
+        #canvas {
+          height: calc(100vh - 100px);
+        }
+
+        .autocomplete-dropdown {
+          width: 180px;
+        }
+      }
     </style>
 </head>
 <body>
