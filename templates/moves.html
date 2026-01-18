@@ -38,10 +38,11 @@
         width: 30px;
         height: 24px;
         cursor: pointer;
-        z-index: 1001;
+        z-index: 2000;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        pointer-events: auto;
       }
 
       .hamburger span {
@@ -575,13 +576,10 @@
         }
 
         function toggleSidebar() {
-            console.log('toggleSidebar called');
             const sidebar = document.getElementById('sidebar');
             const hamburger = document.querySelector('.hamburger');
-            console.log('sidebar:', sidebar, 'hamburger:', hamburger);
             sidebar.classList.toggle('open');
             hamburger.classList.toggle('active');
-            console.log('sidebar classes:', sidebar.className);
         }
 
         // Close sidebar when clicking outside
