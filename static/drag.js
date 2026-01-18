@@ -256,12 +256,13 @@ document.querySelectorAll(".move").forEach(move => {
   }
 
   function handleMove(e) {
-    if (!dragging) return;
-    
-    // Don't interfere with form elements
-    if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') {
+    // Don't interfere with form elements at all
+    const target = e.target || (e.touches && e.touches[0] && e.touches[0].target);
+    if (target && (target.tagName === 'TEXTAREA' || target.tagName === 'INPUT' || target.tagName === 'BUTTON')) {
       return;
     }
+    
+    if (!dragging) return;
     
     e.preventDefault();
 
