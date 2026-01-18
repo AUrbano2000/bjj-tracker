@@ -252,7 +252,7 @@
 
       .move {
         position: absolute;
-        padding: 14px 20px;
+        padding: 16px 24px;
         background: #222;
         color: white;
         border: 1px solid #444;
@@ -261,10 +261,10 @@
         user-select: none;
         display: flex;
         align-items: center;
-        gap: 8px;
-        font-size: 16px;
-        min-width: 100px;
-        min-height: 44px;
+        gap: 10px;
+        font-size: 18px;
+        min-width: 120px;
+        min-height: 50px;
       }
 
       .move:active {
@@ -489,9 +489,9 @@
     </header>
 
     <div id="canvas">
-      <div style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%); text-align: center; opacity: 0.7; pointer-events: none; z-index: 1;">
+      <div style="position: absolute; top: 10px; left: 20px; text-align: left; opacity: 0.7; pointer-events: none; z-index: 1;">
         <div style="font-size: 14px; color: #aaa;">Hold to delete move</div>
-        <div style="font-size: 14px; color: #aaa; margin-top: 4px;">Double click to look into a move</div>
+        <div style="font-size: 14px; color: #aaa; margin-top: 4px;">Double click to open up a move</div>
       </div>
       <svg id="lines-layer">
         <defs>

@@ -82,8 +82,12 @@ setupLineClickHandlers();
 document.querySelectorAll(".move").forEach(move => {
   let offsetX, offsetY, dragging = false;
   let longPressTimer = null;
+  let showPopupTimer = null;
   let longPressPopup = null;
+  let progressDial = null;
   let hasMoved = false;
+  let startX = 0, startY = 0;
+  let lastTap = 0;
 
   // Helper to get position from mouse or touch event
   function getEventPosition(e) {
@@ -94,19 +98,50 @@ document.querySelectorAll(".move").forEach(move => {
   }
 
   function showLongPressPopup() {
+    const rect = move.getBoundingClientRect();
     longPressPopup = document.createElement('div');
     longPressPopup.style.position = 'fixed';
-    longPressPopup.style.top = '50%';
-    longPressPopup.style.left = '50%';
-    longPressPopup.style.transform = 'translate(-50%, -50%)';
+    longPressPopup.style.left = rect.left + rect.width / 2 + 'px';
+    longPressPopup.style.top = (rect.top - 30) + 'px';
+    longPressPopup.style.transform = 'translateX(-50%)';
     longPressPopup.style.background = '#0066cc';
     longPressPopup.style.color = 'white';
-    longPressPopup.style.padding = '15px 25px';
-    longPressPopup.style.borderRadius = '8px';
-    longPressPopup.style.fontSize = '16px';
+    longPressPopup.style.padding = '8px 16px';
+    longPressPopup.style.borderRadius = '6px';
+    longPressPopup.style.fontSize = '14px';
     longPressPopup.style.zIndex = '10000';
+    longPressPopup.style.whiteSpace = 'nowrap';
     longPressPopup.textContent = 'Hold to delete move';
     document.body.appendChild(longPressPopup);
+
+    // Create progress dial
+    progressDial = document.createElement('div');
+    progressDial.style.position = 'fixed';
+    progressDial.style.left = rect.left + rect.width / 2 + 'px';
+    progressDial.style.top = rect.top + rect.height / 2 + 'px';
+    progressDial.style.transform = 'translate(-50%, -50%)';
+    progressDial.style.width = '60px';
+    progressDial.style.height = '60px';
+    progressDial.style.borderRadius = '50%';
+    progressDial.style.border = '4px solid rgba(255, 255, 255, 0.3)';
+    progressDial.style.borderTop = '4px solid white';
+    progressDial.style.zIndex = '10001';
+    progressDial.style.animation = 'spin 2.5s linear';
+    progressDial.style.pointerEvents = 'none';
+    
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes spin {
+        0% { transform: translate(-50%, -50%) rotate(0deg); }
+        100% { transform: translate(-50%, -50%) rotate(360deg); }
+      }
+    `;
+    if (!document.querySelector('style[data-spin-animation]')) {
+      style.setAttribute('data-spin-animation', 'true');
+      document.head.appendChild(style);
+    }
+    
+    document.body.appendChild(progressDial);
   }
 
   function removeLongPressPopup() {
@@ -114,10 +149,29 @@ document.querySelectorAll(".move").forEach(move => {
       longPressPopup.remove();
       longPressPopup = null;
     }
+    if (progressDial) {
+      progressDial.remove();
+      progressDial = null;
+    }
   }
 
   function handleStart(e) {
     hasMoved = false;
+    const pos = getEventPosition(e);
+    startX = pos.clientX;
+    startY = pos.clientY;
+
+    // Handle double-tap on mobile
+    const currentTime = new Date().getTime();
+    const tapLength = currentTime - lastTap;
+    if (tapLength < 500 && tapLength > 0) {
+      // Double tap detected
+      e.preventDefault();
+      const moveName = move.querySelector('.move-name').textContent;
+      openMoveProfile(moveName);
+      return;
+    }
+    lastTap = currentTime;
     
     if (connectMode) {
       // Connect mode: select moves to connect
@@ -156,36 +210,48 @@ document.querySelectorAll(".move").forEach(move => {
     } else {
       // Drag mode
       dragging = true;
-      const pos = getEventPosition(e);
       const canvas = document.getElementById("canvas").getBoundingClientRect();
       offsetX = pos.clientX - move.getBoundingClientRect().left;
       offsetY = pos.clientY - move.getBoundingClientRect().top;
       e.preventDefault();
 
-      // Start long press timer
-      showLongPressPopup();
-      longPressTimer = setTimeout(() => {
-        removeLongPressPopup();
-        // Remove from map (hide it)
-        move.style.display = 'none';
-        dragging = false;
-      }, 3000);
+      // Start timer to show popup after 0.5s
+      showPopupTimer = setTimeout(() => {
+        if (!hasMoved) {
+          showLongPressPopup();
+          // Start long press timer for actual deletion
+          longPressTimer = setTimeout(() => {
+            removeLongPressPopup();
+            // Remove from map (hide it)
+            move.style.display = 'none';
+            dragging = false;
+          }, 2500); // 2.5 more seconds after popup shows (3s total)
+        }
+      }, 500);
     }
   }
 
   function handleMove(e) {
     if (!dragging) return;
-    hasMoved = true;
     e.preventDefault();
 
-    // Cancel long press if user starts dragging
-    if (longPressTimer) {
-      clearTimeout(longPressTimer);
-      removeLongPressPopup();
-      longPressTimer = null;
+    const pos = getEventPosition(e);
+    const distance = Math.sqrt(Math.pow(pos.clientX - startX, 2) + Math.pow(pos.clientY - startY, 2));
+    
+    // If moved more than 5px, cancel long press
+    if (distance > 5) {
+      hasMoved = true;
+      if (showPopupTimer) {
+        clearTimeout(showPopupTimer);
+        showPopupTimer = null;
+      }
+      if (longPressTimer) {
+        clearTimeout(longPressTimer);
+        removeLongPressPopup();
+        longPressTimer = null;
+      }
     }
 
-    const pos = getEventPosition(e);
     const canvas = document.getElementById("canvas").getBoundingClientRect();
     move.style.left = (pos.clientX - canvas.left - offsetX) + "px";
     move.style.top = (pos.clientY - canvas.top - offsetY) + "px";
@@ -193,6 +259,10 @@ document.querySelectorAll(".move").forEach(move => {
   }
 
   function handleEnd() {
+    if (showPopupTimer) {
+      clearTimeout(showPopupTimer);
+      showPopupTimer = null;
+    }
     if (longPressTimer) {
       clearTimeout(longPressTimer);
       removeLongPressPopup();
