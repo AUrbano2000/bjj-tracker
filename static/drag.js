@@ -167,6 +167,12 @@ document.querySelectorAll(".move").forEach(move => {
   }
 
   function handleStart(e) {
+    // Don't start dragging if clicking on form elements
+    const target = e.target || e.touches?.[0]?.target;
+    if (target && (target.tagName === 'TEXTAREA' || target.tagName === 'INPUT' || target.tagName === 'BUTTON')) {
+      return;
+    }
+    
     hasMoved = false;
     const pos = getEventPosition(e);
     startX = pos.clientX;

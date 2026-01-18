@@ -280,12 +280,8 @@
 
         <div class="notes-section">
             <h2>📝 Notes & Tips</h2>
-            <form method="POST" id="notesForm">
-                <div id="notesBox" 
-                     contenteditable="true"
-                     style="min-height: 200px; max-height: 500px; overflow-y: auto; padding: 12px; background: #1a1a1a; border: 1px solid #444; color: white; border-radius: 6px; font-family: inherit; font-size: 14px; margin-bottom: 12px; outline: none; white-space: pre-wrap;"
-                     data-placeholder="Add your notes, tips, common mistakes, setup details, etc.">{{ profile.notes or '' }}</div>
-                <input type="hidden" name="notes" id="notesInput">
+            <form method="POST">
+                <textarea name="notes" placeholder="Add your notes, tips, common mistakes, setup details, etc.">{{ profile.notes or '' }}</textarea>
                 <input type="hidden" name="hit_count" id="hitCountInput" value="{{ profile.hit_count }}">
                 <button type="submit">💾 Save Notes</button>
             </form>
@@ -437,11 +433,7 @@
         }
 
         // Show success message on form submit
-        const notesBox = document.getElementById('notesBox');
-        document.getElementById('notesForm').addEventListener('submit', function(e) {
-            // Copy contenteditable content to hidden input
-            document.getElementById('notesInput').value = notesBox.innerText;
-            
+        document.querySelector('form').addEventListener('submit', function() {
             setTimeout(() => {
                 showSuccess();
             }, 100);
