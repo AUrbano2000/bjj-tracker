@@ -582,6 +582,15 @@
                 });
         }
 
+        // Ensure textarea focuses on mobile tap
+        const textarea = document.querySelector('textarea[name="content"]');
+        if (textarea) {
+            textarea.addEventListener('touchstart', function(e) {
+                e.stopPropagation();
+                setTimeout(() => this.focus(), 0);
+            });
+        }
+
         function renderCalendar() {
             const now = new Date();
             const year = now.getFullYear();

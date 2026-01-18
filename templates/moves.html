@@ -685,6 +685,15 @@
                 document.getElementById('autocompleteDropdown').classList.remove('show');
             }
         });
+
+        // Ensure move input focuses on mobile tap
+        const moveInput = document.getElementById('moveInput');
+        if (moveInput) {
+            moveInput.addEventListener('touchstart', function(e) {
+                e.stopPropagation();
+                setTimeout(() => this.focus(), 0);
+            });
+        }
     </script>
 
     <script src="{{ url_for('static', filename='drag.js') }}"></script>
