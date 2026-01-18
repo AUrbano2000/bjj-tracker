@@ -557,6 +557,22 @@
             margin-top: 70px;
         }
 
+        .hold-text.fade-out {
+            animation: fade-out 0.2s ease-out forwards;
+        }
+
+        .hold-indicator.fade-out {
+            animation: fade-out-indicator 0.2s ease-out forwards !important;
+        }
+
+        .hold-indicator.fade-out::after {
+            animation: none !important;
+        }
+
+        .hold-indicator.fade-out::before {
+            animation: none !important;
+        }
+
         @keyframes fade-in {
             from {
                 opacity: 0;
@@ -565,6 +581,28 @@
             to {
                 opacity: 1;
                 transform: translate(-50%, -50%) translateY(0);
+            }
+        }
+
+        @keyframes fade-out {
+            from {
+                opacity: 1;
+                transform: translate(-50%, -50%) translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translate(-50%, -50%) translateY(10px);
+            }
+        }
+
+        @keyframes fade-out-indicator {
+            from {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+            to {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.8);
             }
         }
 
@@ -1280,10 +1318,20 @@
                 clearTimeout(holdState.textTimeoutId);
             }
             if (holdState.indicatorElement) {
-                holdState.indicatorElement.remove();
+                holdState.indicatorElement.classList.add('fade-out');
+                setTimeout(() => {
+                    if (holdState.indicatorElement && holdState.indicatorElement.parentNode) {
+                        holdState.indicatorElement.remove();
+                    }
+                }, 200);
             }
             if (holdState.textElement) {
-                holdState.textElement.remove();
+                holdState.textElement.classList.add('fade-out');
+                setTimeout(() => {
+                    if (holdState.textElement && holdState.textElement.parentNode) {
+                        holdState.textElement.remove();
+                    }
+                }, 200);
             }
             holdState.isHolding = false;
             holdState.isDragging = false;
