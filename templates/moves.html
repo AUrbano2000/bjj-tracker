@@ -492,6 +492,12 @@
       <div style="position: absolute; top: 10px; left: 20px; text-align: left; opacity: 0.7; pointer-events: none; z-index: 1;">
         <div style="font-size: 14px; color: #aaa;">Hold to delete move</div>
       </div>
+      
+      <!-- Permanent Info Button -->
+      <button id="moveInfoButton" style="position: fixed; bottom: 20px; left: 20px; background: #555; color: #aaa; padding: 14px 24px; border: none; border-radius: 6px; font-size: 16px; font-weight: 500; cursor: default; z-index: 10000; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">
+        Info Button
+      </button>
+      
       <svg id="lines-layer">
         <defs>
           <marker id="arrowhead" markerWidth="10" markerHeight="10" 
@@ -519,54 +525,48 @@
     <script>
         const moveProfiles = {{ move_profiles | tojson }};
         const currentMapId = {{ current_map_id }};
-        let currentMovePopup = null;
+        const infoButton = document.getElementById('moveInfoButton');
+        let currentMoveName = null;
 
         function handleMoveClick(event, moveName) {
             event.stopPropagation();
             
-            // Remove any existing popup
-            removeClickPopup();
+            // Update button to show move name
+            currentMoveName = moveName;
+            infoButton.textContent = moveName + ' Info';
+            infoButton.style.background = '#0066cc';
+            infoButton.style.color = 'white';
+            infoButton.style.cursor = 'pointer';
             
-            // Create and show new popup button
-            currentMovePopup = document.createElement('button');
-            currentMovePopup.style.position = 'fixed';
-            currentMovePopup.style.bottom = '20px';
-            currentMovePopup.style.left = '20px';
-            currentMovePopup.style.background = '#0066cc';
-            currentMovePopup.style.color = 'white';
-            currentMovePopup.style.padding = '14px 24px';
-            currentMovePopup.style.border = 'none';
-            currentMovePopup.style.borderRadius = '6px';
-            currentMovePopup.style.fontSize = '16px';
-            currentMovePopup.style.fontWeight = '500';
-            currentMovePopup.style.cursor = 'pointer';
-            currentMovePopup.style.zIndex = '10000';
-            currentMovePopup.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
-            currentMovePopup.textContent = moveName + ' Move Info';
-            currentMovePopup.onclick = function() {
-                openMoveProfile(moveName);
-                removeClickPopup();
+            // Set up click handler
+            infoButton.onclick = function() {
+                openMoveProfile(currentMoveName);
             };
-            currentMovePopup.onmouseover = function() {
+            
+            // Add hover effect
+            infoButton.onmouseover = function() {
                 this.style.background = '#0052a3';
             };
-            currentMovePopup.onmouseout = function() {
+            infoButton.onmouseout = function() {
                 this.style.background = '#0066cc';
             };
-            document.body.appendChild(currentMovePopup);
         }
 
-        function removeClickPopup() {
-            if (currentMovePopup) {
-                currentMovePopup.remove();
-                currentMovePopup = null;
-            }
+        function resetInfoButton() {
+            currentMoveName = null;
+            infoButton.textContent = 'Info Button';
+            infoButton.style.background = '#555';
+            infoButton.style.color = '#aaa';
+            infoButton.style.cursor = 'default';
+            infoButton.onclick = null;
+            infoButton.onmouseover = null;
+            infoButton.onmouseout = null;
         }
 
-        // Clear popup when clicking elsewhere
+        // Reset button when clicking elsewhere
         document.addEventListener('click', function(e) {
-            if (!e.target.classList.contains('move-name') && !e.target.classList.contains('move')) {
-                removeClickPopup();
+            if (!e.target.classList.contains('move-name') && !e.target.classList.contains('move') && e.target.id !== 'moveInfoButton') {
+                resetInfoButton();
             }
         });
 

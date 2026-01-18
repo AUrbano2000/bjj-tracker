@@ -101,7 +101,7 @@ document.querySelectorAll(".move").forEach(move => {
     longPressPopup = document.createElement('div');
     longPressPopup.style.position = 'fixed';
     longPressPopup.style.left = rect.left + rect.width / 2 + 'px';
-    longPressPopup.style.top = (rect.top - 30) + 'px';
+    longPressPopup.style.top = (rect.top - 50) + 'px';
     longPressPopup.style.transform = 'translateX(-50%)';
     longPressPopup.style.background = '#0066cc';
     longPressPopup.style.color = 'white';
@@ -202,7 +202,7 @@ document.querySelectorAll(".move").forEach(move => {
       offsetY = pos.clientY - move.getBoundingClientRect().top;
       e.preventDefault();
 
-      // Start timer to show popup after 0.5s
+      // Start timer to show popup after 0.35s
       showPopupTimer = setTimeout(() => {
         if (!hasMoved) {
           showLongPressPopup();
@@ -214,7 +214,7 @@ document.querySelectorAll(".move").forEach(move => {
             dragging = false;
           }, 1500); // 1.5 more seconds after popup shows (2s total)
         }
-      }, 500);
+      }, 350);
     }
   }
 
