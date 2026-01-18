@@ -110,7 +110,7 @@ document.querySelectorAll(".move").forEach(move => {
     longPressPopup.style.fontSize = '14px';
     longPressPopup.style.zIndex = '10000';
     longPressPopup.style.whiteSpace = 'nowrap';
-    longPressPopup.textContent = 'Hold to delete move';
+    longPressPopup.textContent = 'Hold to open move information';
     document.body.appendChild(longPressPopup);
 
     // Create progress dial
@@ -206,13 +206,14 @@ document.querySelectorAll(".move").forEach(move => {
       showPopupTimer = setTimeout(() => {
         if (!hasMoved) {
           showLongPressPopup();
-          // Start long press timer for actual deletion
+          // Start long press timer to open profile
           longPressTimer = setTimeout(() => {
             removeLongPressPopup();
-            // Remove from map - actually remove the element
-            move.remove();
+            // Open move profile
+            const moveName = move.querySelector('.move-name').textContent;
+            openMoveProfile(moveName);
             dragging = false;
-          }, 1500); // 1.5 more seconds after popup shows (2s total)
+          }, 1150); // 1.15 more seconds after popup shows (1.5s total)
         }
       }, 350);
     }
