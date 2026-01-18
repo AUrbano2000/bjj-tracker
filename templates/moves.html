@@ -3,485 +3,709 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=5.0">
-    <title>Moves</title>
+    <title>Move Maps - BJJ Tracker</title>
     <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
     <meta name="theme-color" content="#0066cc">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="application-name" content="BJJ Tracker">
     <meta name="apple-mobile-web-app-title" content="BJJ Tracker">
+
     <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
-      body {
-        font-family: system-ui, sans-serif;
-        background: #1a1a1a;
-        color: white;
-        overflow: hidden;
-      }
-
-      input, textarea {
-        pointer-events: auto;
-        -webkit-user-select: text;
-        user-select: text;
-        font-size: 16px;
-      }
-
-      /* Hamburger Container */
-      .hamburger-container {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 70px;
-        height: 70px;
-        background: #111;
-        border-bottom: 1px solid #333;
-        border-right: 1px solid #333;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 2000;
-      }
-
-      /* Hamburger Menu */
-      .hamburger {
-        width: 30px;
-        height: 24px;
-        cursor: pointer;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        pointer-events: auto;
-      }
-
-      .hamburger span {
-        display: block;
-        height: 3px;
-        background: white;
-        border-radius: 3px;
-        transition: 0.3s;
-      }
-
-      .hamburger.active span:nth-child(1) {
-        transform: rotate(45deg) translate(8px, 8px);
-      }
-
-      .hamburger.active span:nth-child(2) {
-        opacity: 0;
-      }
-
-      .hamburger.active span:nth-child(3) {
-        transform: rotate(-45deg) translate(7px, -7px);
-      }
-
-      /* Sidebar */
-      .sidebar {
-        position: fixed;
-        left: -320px;
-        top: 0;
-        width: 320px;
-        height: 100vh;
-        background: #111;
-        border-right: 1px solid #333;
-        transition: 0.3s;
-        overflow-y: auto;
-        z-index: 1000;
-        padding: 80px 20px 20px 20px;
-      }
-
-      .sidebar.open {
-        left: 0;
-      }
-
-      .sidebar h3 {
-        margin-bottom: 20px;
-        color: #0066cc;
-      }
-
-      .map-list {
-        margin-bottom: 30px;
-      }
-
-      .map-item {
-        background: #222;
-        padding: 12px;
-        margin-bottom: 8px;
-        border-radius: 6px;
-        cursor: pointer;
-        border-left: 3px solid #444;
-        transition: 0.2s;
-      }
-
-      .map-item:hover {
-        background: #2a2a2a;
-      }
-
-      .map-item.active {
-        border-left-color: #0066cc;
-        background: #1a3a5c;
-      }
-
-      .map-item-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-
-      .delete-map-btn {
-        color: #ff4444;
-        font-size: 18px;
-        cursor: pointer;
-        padding: 0 8px;
-        display: none;
-      }
-
-      .map-item:hover .delete-map-btn {
-        display: block;
-      }
-
-      .delete-map-btn:hover {
-        color: #ff0000;
-      }
-
-      .new-map-form {
-        display: flex;
-        gap: 8px;
-        margin-top: 16px;
-      }
-
-      .new-map-form input {
-        flex: 1;
-        padding: 8px;
-        background: #222;
-        border: 1px solid #444;
-        color: white;
-        border-radius: 4px;
-        font-size: 13px;
-      }
-
-      .new-map-form button {
-        padding: 8px 12px;
-        background: #0066cc;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 13px;
-      }
-
-      header {
-        padding: 20px 20px 20px 20px;
-        background: #111;
-        border-bottom: 1px solid #333;
-        position: relative;
-        z-index: 10;
-      }
-
-      .header-top {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 10px;
-        flex-wrap: wrap;
-        gap: 10px;
-      }
-
-      .header-controls {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-      }
-
-      header h2 {
-        margin: 0;
-      }
-
-      form {
-        display: flex;
-        gap: 10px;
-        margin-top: 10px;
-        position: relative;
-      }
-
-      #moveInput {
-        padding: 8px 12px;
-        border: 1px solid #444;
-        background: #222;
-        color: white;
-        border-radius: 4px;
-        flex: 1;
-        max-width: 300px;
-        font-size: 16px;
-      }
-
-      .autocomplete-dropdown {
-        position: absolute;
-        top: 100%;
-        left: 0;
-        width: 300px;
-        background: #222;
-        border: 1px solid #444;
-        border-top: none;
-        border-radius: 0 0 4px 4px;
-        max-height: 200px;
-        overflow-y: auto;
-        display: none;
-        z-index: 100;
-      }
-
-      .autocomplete-dropdown.show {
-        display: block;
-      }
-
-      .autocomplete-item {
-        padding: 10px 12px;
-        cursor: pointer;
-        border-bottom: 1px solid #333;
-      }
-
-      .autocomplete-item:hover {
-        background: #333;
-      }
-
-      .autocomplete-item.create-new {
-        color: #0066cc;
-        font-weight: bold;
-      }
-
-      button {
-        padding: 8px 16px;
-        background: #0066cc;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-      }
-
-      button:hover {
-        background: #0052a3;
-      }
-
-      #canvas {
-        position: relative;
-        width: 100%;
-        height: calc(100vh - 140px);
-        overflow: hidden;
-        background: #1a1a1a;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      #canvas > svg {
-        width: 100% !important;
-        height: 100% !important;
-      }
-
-      .move {
-        position: absolute;
-        padding: 16px 24px;
-        background: #222;
-        color: white;
-        border: 1px solid #444;
-        border-radius: 6px;
-        cursor: grab;
-        user-select: none;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 18px;
-        min-width: 120px;
-        min-height: 50px;
-      }
-
-      .move:active {
-        cursor: grabbing;
-      }
-
-      .move-name {
-        cursor: pointer;
-      }
-
-      .move-name:hover {
-        color: #0066cc;
-        text-decoration: underline;
-      }
-
-      .delete-move-btn {
-        color: #ff4444;
-        font-size: 16px;
-        cursor: pointer;
-        padding: 0 4px;
-        display: none;
-      }
-
-      .move:hover .delete-move-btn {
-        display: block;
-      }
-
-      .delete-move-btn:hover {
-        color: #ff0000;
-      }
-
-      a {
-        color: #0066cc;
-        text-decoration: none;
-      }
-
-      a:hover {
-        text-decoration: underline;
-      }
-
-      .nav-button {
-        display: inline-block;
-        padding: 12px 24px;
-        background: white;
-        color: #1a1a1a;
-        text-decoration: none;
-        border-radius: 6px;
-        font-weight: 500;
-        font-size: 14px;
-        transition: 0.2s;
-      }
-
-      .top-nav {
-        display: inline-block;
-      }
-
-      .nav-button:hover {
-        background: #e0e0e0;
-        text-decoration: none;
-        transform: translateY(-1px);
-      }
-
-      #lines-layer {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-      }
-
-      .connection-line {
-        stroke: #0066cc;
-        stroke-width: 2;
-        fill: none;
-        marker-end: url(#arrowhead);
-        pointer-events: stroke;
-        cursor: pointer;
-      }
-
-      .connection-line:hover {
-        stroke: #ff4444;
-        stroke-width: 3;
-      }
-
-      .move.connecting {
-        box-shadow: 0 0 10px #0066cc;
-      }
-
-      .mode-indicator {
-        padding: 8px 12px;
-        background: #222;
-        border: 1px solid #444;
-        border-radius: 4px;
-        font-size: 14px;
-        cursor: pointer;
-        user-select: none;
-        white-space: nowrap;
-      }
-
-      .mode-indicator:hover {
-        background: #333;
-      }
-
-      .mode-indicator.active {
-        background: #0066cc;
-        border-color: #0066cc;
-      }
-
-      /* Mobile Responsive */
-      @media (max-width: 768px) {
-        header {
-          padding: 12px 12px 12px 55px;
+        /* ============================================
+           GLOBAL STYLES
+           ============================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        .header-top {
-          flex-direction: column;
-          align-items: flex-start;
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: #1a1a1a;
+            color: white;
+            overflow: hidden;
+            height: 100vh;
         }
 
-        .header-controls {
-          width: 100%;
-          justify-content: space-between;
+        input, textarea, button {
+            font-size: 16px;
         }
 
-        header h2 {
-          font-size: 16px;
+        input, textarea {
+            -webkit-user-select: text;
+            user-select: text;
+            pointer-events: auto;
         }
 
-        #moveInput {
-          max-width: 150px;
-          font-size: 13px;
-          padding: 6px 8px;
+        /* ============================================
+           HAMBURGER MENU
+           ============================================ */
+        .hamburger {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 30px;
+            height: 24px;
+            cursor: pointer;
+            z-index: 1001;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            pointer-events: auto;
         }
 
-        button {
-          padding: 6px 10px;
-          font-size: 13px;
+        .hamburger span {
+            display: block;
+            height: 3px;
+            background: white;
+            border-radius: 3px;
+            transition: 0.3s ease;
         }
 
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(8px, 8px);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -7px);
+        }
+
+        /* ============================================
+           SIDEBAR
+           ============================================ */
         .sidebar {
-          width: 280px;
-          left: -280px;
-          padding: 70px 15px 15px 15px;
+            position: fixed;
+            left: -320px;
+            top: 0;
+            width: 320px;
+            height: 100vh;
+            background: #111;
+            border-right: 1px solid #333;
+            transition: 0.3s ease;
+            overflow-y: auto;
+            z-index: 1000;
+            padding: 80px 20px 20px 20px;
         }
 
         .sidebar.open {
-          left: 0;
+            left: 0;
+        }
+
+        .sidebar h3 {
+            margin-bottom: 20px;
+            color: #0066cc;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .map-list {
+            margin-bottom: 30px;
+        }
+
+        .map-item {
+            background: #222;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            border-left: 3px solid #444;
+            transition: all 0.2s;
+        }
+
+        .map-item:hover {
+            background: #2a2a2a;
+            border-left-color: #0066cc;
+        }
+
+        .map-item.active {
+            border-left-color: #0066cc;
+            background: #1a3a5c;
+        }
+
+        .map-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .delete-map-btn {
+            color: #ff4444;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 0 4px;
+            display: none;
+            line-height: 1;
+        }
+
+        .map-item:hover .delete-map-btn {
+            display: block;
+        }
+
+        .delete-map-btn:hover {
+            color: #ff0000;
+        }
+
+        .new-map-form {
+            display: flex;
+            gap: 8px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #333;
+        }
+
+        .new-map-form input {
+            flex: 1;
+            padding: 8px 12px;
+            background: #222;
+            border: 1px solid #444;
+            color: white;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .new-map-form input:focus {
+            outline: none;
+            border-color: #0066cc;
+        }
+
+        .new-map-form button {
+            padding: 8px 12px;
+            background: #0066cc;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .new-map-form button:hover {
+            background: #0052a3;
+        }
+
+        /* ============================================
+           HEADER
+           ============================================ */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #111;
+            border-bottom: 1px solid #333;
+            padding: 20px;
+            z-index: 100;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        header h2 {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0 0 0 20px;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
         }
 
         .mode-indicator {
-          padding: 6px 8px;
-          font-size: 11px;
+            padding: 8px 12px;
+            background: #222;
+            border: 1px solid #444;
+            border-radius: 4px;
+            font-size: 13px;
+            cursor: pointer;
+            user-select: none;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .mode-indicator:hover {
+            background: #333;
+        }
+
+        .mode-indicator.active {
+            background: #0066cc;
+            border-color: #0066cc;
         }
 
         .nav-button {
-          padding: 6px 10px;
-          font-size: 11px;
+            display: inline-block;
+            padding: 8px 16px;
+            background: white;
+            color: #1a1a1a;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s;
+            cursor: pointer;
         }
 
-        .move {
-          padding: 8px 12px;
-          font-size: 14px;
+        .nav-button:hover {
+            background: #e0e0e0;
+            text-decoration: none;
+            transform: translateY(-1px);
         }
 
-        #canvas {
-          height: calc(100vh - 100px);
+        /* ============================================
+           FORM SECTION
+           ============================================ */
+        .form-section {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-top: 10px;
+            position: relative;
+        }
+
+        #moveInput {
+            padding: 8px 12px;
+            border: 1px solid #444;
+            background: #222;
+            color: white;
+            border-radius: 4px;
+            flex: 1;
+            max-width: 300px;
+            font-size: 14px;
+        }
+
+        #moveInput:focus {
+            outline: none;
+            border-color: #0066cc;
         }
 
         .autocomplete-dropdown {
-          width: 180px;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 300px;
+            background: #222;
+            border: 1px solid #444;
+            border-top: none;
+            border-radius: 0 0 4px 4px;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+            z-index: 101;
+            margin-top: -1px;
         }
-      }
+
+        .autocomplete-dropdown.show {
+            display: block;
+        }
+
+        .autocomplete-item {
+            padding: 10px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #333;
+            transition: background 0.15s;
+        }
+
+        .autocomplete-item:hover {
+            background: #333;
+        }
+
+        .autocomplete-item.create-new {
+            color: #0066cc;
+            font-weight: 600;
+        }
+
+        button {
+            padding: 8px 16px;
+            background: #0066cc;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: #0052a3;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        /* ============================================
+           CANVAS & MOVES
+           ============================================ */
+        #canvas {
+            position: relative;
+            width: 100%;
+            height: calc(100vh - 140px);
+            margin-top: 140px;
+            overflow: hidden;
+            background: #1a1a1a;
+        }
+
+        #lines-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .connection-line {
+            stroke: #0066cc;
+            stroke-width: 2;
+            fill: none;
+            marker-end: url(#arrowhead);
+            pointer-events: stroke;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .connection-line:hover {
+            stroke: #ff4444;
+            stroke-width: 3;
+        }
+
+        .move {
+            position: absolute;
+            padding: 12px 16px;
+            background: #222;
+            color: white;
+            border: 1px solid #444;
+            border-radius: 6px;
+            cursor: grab;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            min-width: 100px;
+            min-height: 44px;
+        }
+
+        .move:hover {
+            background: #2a2a2a;
+            border-color: #0066cc;
+        }
+
+        .move:active {
+            cursor: grabbing;
+        }
+
+        .move.connecting {
+            box-shadow: 0 0 10px #0066cc;
+            border-color: #0066cc;
+        }
+
+        .move-name {
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .move-name:hover {
+            color: #0066cc;
+            text-decoration: underline;
+        }
+
+        .delete-move-btn {
+            color: #ff4444;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 2px 4px;
+            display: none;
+            line-height: 1;
+            opacity: 0.7;
+        }
+
+        .move:hover .delete-move-btn {
+            display: block;
+        }
+
+        .delete-move-btn:hover {
+            color: #ff0000;
+            opacity: 1;
+        }
+
+        .instruction-overlay {
+            position: absolute;
+            top: 10px;
+            left: 20px;
+            text-align: left;
+            opacity: 0.6;
+            pointer-events: none;
+            z-index: 1;
+            font-size: 13px;
+            color: #aaa;
+            line-height: 1.6;
+        }
+
+        /* ============================================
+           HOLD INTERACTION
+           ============================================ */
+        .hold-indicator {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 10;
+            background: radial-gradient(circle, transparent 60%, rgba(0, 102, 204, 0.1) 100%);
+            border: 3px dashed #0066cc;
+            animation: pulse-spin 1.75s linear forwards;
+        }
+
+        .hold-indicator::after {
+            content: '';
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-top-color: #0066cc;
+            border-right-color: #00d4ff;
+            animation: spin-fast 1.75s linear forwards;
+            top: -3px;
+            left: -3px;
+        }
+
+        .hold-indicator::before {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid rgba(0, 102, 204, 0.4);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: scale-pulse 1.75s ease-in forwards;
+        }
+
+        @keyframes spin-fast {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes pulse-spin {
+            from {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+            to {
+                opacity: 0.5;
+                transform: translate(-50%, -50%) scale(1.2);
+            }
+        }
+
+        @keyframes scale-pulse {
+            0%, 100% {
+                transform: translate(-50%, -50%) scale(1);
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(0.7);
+            }
+        }
+
+        .hold-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 11;
+            font-size: 12px;
+            color: #0066cc;
+            font-weight: 600;
+            text-align: center;
+            white-space: nowrap;
+            animation: fade-in 0.3s ease-in;
+            margin-top: 70px;
+        }
+
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -50%) translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) translateY(0);
+            }
+        }
+
+        /* ============================================
+           MOVE PROFILE MODAL
+           ============================================ */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            background: #222;
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal h2 {
+            margin-top: 0;
+            color: #0066cc;
+            margin-bottom: 15px;
+        }
+
+        .modal p {
+            line-height: 1.6;
+            color: #ddd;
+            margin-bottom: 10px;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 28px;
+            cursor: pointer;
+            color: #aaa;
+            background: none;
+            border: none;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            color: white;
+        }
+
+        /* ============================================
+           MOBILE RESPONSIVE
+           ============================================ */
+        @media (max-width: 768px) {
+            header {
+                padding: 12px 12px 12px 60px;
+            }
+
+            .header-top {
+                flex-direction: column;
+                align-items: flex-start;
+                margin-bottom: 8px;
+            }
+
+            header h2 {
+                font-size: 16px;
+            }
+
+            .header-controls {
+                width: 100%;
+                justify-content: space-between;
+                flex-wrap: wrap;
+            }
+
+            .form-section {
+                margin-top: 8px;
+            }
+
+            #moveInput {
+                max-width: 140px;
+                font-size: 13px;
+                padding: 6px 8px;
+            }
+
+            .autocomplete-dropdown {
+                width: 160px;
+            }
+
+            button {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+
+            .mode-indicator {
+                padding: 6px 8px;
+                font-size: 11px;
+            }
+
+            .nav-button {
+                padding: 6px 10px;
+                font-size: 11px;
+            }
+
+            .sidebar {
+                width: 280px;
+                left: -280px;
+                padding: 70px 15px 15px 15px;
+            }
+
+            #canvas {
+                height: calc(100vh - 100px);
+                margin-top: 100px;
+            }
+
+            .move {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+
+            .instruction-overlay {
+                font-size: 11px;
+                top: 5px;
+                left: 10px;
+            }
+        }
     </style>
 </head>
 <body>
-    <!-- Hamburger Menu Container -->
-    <div class="hamburger-container">
-        <div class="hamburger" onclick="toggleSidebar()">
-            <span></span>
-            <span></span>
-            <span></span>
-        </div>
+    <!-- Hamburger Menu -->
+    <div class="hamburger" onclick="toggleSidebar()">
+        <span></span>
+        <span></span>
+        <span></span>
     </div>
 
-    <!-- Sidebar with Move Maps -->
+    <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <h3>📍 Move Maps</h3>
         <div class="map-list">
@@ -490,7 +714,7 @@
                     <div class="map-item-header">
                         <span>{{ map.name }}</span>
                         {% if maps|length > 1 %}
-                        <span class="delete-map-btn" onclick="deleteMap(event, {{ map.id }})">×</span>
+                            <span class="delete-map-btn" onclick="deleteMap(event, {{ map.id }})" title="Delete map">×</span>
                         {% endif %}
                     </div>
                 </div>
@@ -503,101 +727,224 @@
         </div>
     </div>
 
-    <!-- Header Container -->
-    <div class="header-container">
-        <header>
-          <div class="header-top">
+    <!-- Header -->
+    <header>
+        <div class="header-top">
             <h2>{{ current_map_name }} Move Map</h2>
             <div class="header-controls">
-              <div class="mode-indicator" id="mode-indicator" onclick="toggleConnectMode()">Drag Mode</div>
-              <div class="top-nav">
+                <div class="mode-indicator" id="connectModeButton" onclick="toggleConnectMode()" title="Connect moves">Click to connect moves</div>
+                <div class="mode-indicator" id="modeToggleButton" onclick="toggleMode()">Info Mode</div>
                 <a href="/" class="nav-button">← Back to Journal</a>
-              </div>
             </div>
-          </div>
-          <form method="POST" onsubmit="return false;" style="position: relative; display: flex; gap: 8px; align-items: center;">
-            <input id="moveInput" name="name" placeholder="Enter move name here" required autocomplete="off"
-                   oninput="showAutocomplete(this.value)">
+        </div>
+
+        <div class="form-section">
+            <input 
+                id="moveInput" 
+                type="text"
+                name="name" 
+                placeholder="Enter move name..." 
+                autocomplete="off"
+                oninput="showAutocomplete(this.value)"
+            >
             <div class="autocomplete-dropdown" id="autocompleteDropdown"></div>
             <button type="button" onclick="addMove()">Add Move</button>
-            <button type="button" id="modeToggleButton" onclick="toggleMode()" style="padding: 8px 16px; background: #0066cc; color: white; border: 2px solid #0066cc; border-radius: 4px; cursor: pointer; font-weight: 500;">Info Move</button>
-          </form>
-        </header>
+        </div>
+    </header>
+
+    <!-- Canvas -->
+    <div id="canvas">
+        <div class="instruction-overlay" id="instructionText">
+            <div>Hold to view more information on a move</div>
+            <div>Press info mode button to change to delete mode</div>
+        </div>
+
+        <!-- SVG Lines Layer -->
+        <svg id="lines-layer">
+            <defs>
+                <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                    <polygon points="0 0, 10 3, 0 6" fill="#0066cc" />
+                </marker>
+            </defs>
+            {% for t in transitions %}
+                <line class="connection-line" data-from="{{ t.from_move_id }}" data-to="{{ t.to_move_id }}" />
+            {% endfor %}
+        </svg>
+
+        <!-- Moves -->
+        {% for move in moves %}
+            <div class="move" data-id="{{ move.id }}" style="left: {{ move.x }}px; top: {{ move.y }}px;">
+                <span class="move-name">{{ move.name }}</span>
+            </div>
+        {% endfor %}
     </div>
 
-    <div id="canvas">
-      <div id="instructionText" style="position: absolute; top: 10px; left: 20px; text-align: left; opacity: 0.7; pointer-events: none; z-index: 1;">
-        <div style="font-size: 14px; color: #aaa;">Hold to open more information on a move</div>
-        <div style="font-size: 14px; color: #aaa; margin-top: 4px;">Press info move button to change to delete move mode</div>
-      </div>
-      
-      <svg id="lines-layer">
-        <defs>
-          <marker id="arrowhead" markerWidth="10" markerHeight="10" 
-                  refX="9" refY="3" orient="auto">
-            <polygon points="0 0, 10 3, 0 6" fill="#0066cc" />
-          </marker>
-        </defs>
-        {% for t in transitions %}
-          <line class="connection-line"
-                data-from="{{ t.from_move_id }}"
-                data-to="{{ t.to_move_id }}" />
-        {% endfor %}
-      </svg>
-
-      {% for move in moves %}
-        <div class="move"
-             data-id="{{ move.id }}"
-             style="left: {{ move.x }}px; top: {{ move.y }}px;">
-          <span class="move-name" onclick="handleMoveClick(event, '{{ move.name }}')">{{ move.name }}</span>
-          <span class="delete-move-btn" onclick="deleteMove(event, {{ move.id }})" title="Delete move">×</span>
+    <!-- Move Profile Modal -->
+    <div class="modal-overlay" id="profileModal">
+        <div class="modal">
+            <button class="modal-close" onclick="closeProfileModal()">×</button>
+            <h2 id="profileTitle">Move Profile</h2>
+            <div id="profileContent">
+                <p>Loading profile...</p>
+            </div>
         </div>
-      {% endfor %}
     </div>
 
     <script>
+        // ============================================
+        // STATE & CONFIGURATION
+        // ============================================
         const moveProfiles = {{ move_profiles | tojson }};
         const currentMapId = {{ current_map_id }};
         let deleteMode = false;
+        let connectMode = false;
+        let selectedMoveForConnection = null;
+
+        // ============================================
+        // MODE MANAGEMENT
+        // ============================================
+        function toggleConnectMode() {
+            connectMode = !connectMode;
+            selectedMoveForConnection = null;
+            const btn = document.getElementById('connectModeButton');
+            const moves = document.querySelectorAll('.move');
+            
+            if (connectMode) {
+                btn.classList.add('active');
+                moves.forEach(move => {
+                    move.style.cursor = 'pointer';
+                    move.onclick = (e) => handleMoveConnectionClick(e, move);
+                });
+            } else {
+                btn.classList.remove('active');
+                moves.forEach(move => {
+                    move.style.cursor = 'grab';
+                    move.onclick = null;
+                    move.classList.remove('connecting');
+                });
+                setupMoveHoldListeners();
+            }
+        }
+
+        function handleMoveConnectionClick(e, moveElement) {
+            e.stopPropagation();
+            
+            if (!connectMode) return;
+            
+            if (!selectedMoveForConnection) {
+                // First click - select this move
+                selectedMoveForConnection = moveElement;
+                selectedMoveForConnection.classList.add('connecting');
+            } else if (selectedMoveForConnection === moveElement) {
+                // Clicking same move - deselect
+                selectedMoveForConnection.classList.remove('connecting');
+                selectedMoveForConnection = null;
+            } else {
+                // Second click - connect the two moves
+                const fromId = parseInt(selectedMoveForConnection.dataset.id);
+                const toId = parseInt(moveElement.dataset.id);
+                
+                // Create connection via API
+                fetch('/create_transition', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        from_move_id: fromId, 
+                        to_move_id: toId 
+                    })
+                })
+                .then(res => {
+                    // Deselect
+                    selectedMoveForConnection.classList.remove('connecting');
+                    selectedMoveForConnection = null;
+                    
+                    // Add new line to SVG
+                    addConnectionLine(fromId, toId);
+                    drawConnectionLines();
+                    setupLineClickHandlers();
+                })
+                .catch(err => {
+                    console.error('Error creating connection:', err);
+                    selectedMoveForConnection.classList.remove('connecting');
+                    selectedMoveForConnection = null;
+                });
+            }
+        }
+
+        function addConnectionLine(fromId, toId) {
+            const linesLayer = document.getElementById('lines-layer');
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            line.setAttribute('class', 'connection-line');
+            line.setAttribute('data-from', fromId);
+            line.setAttribute('data-to', toId);
+            linesLayer.appendChild(line);
+        }
+
+        function drawConnectionLines() {
+            const linesLayer = document.getElementById('lines-layer');
+            const lines = linesLayer.querySelectorAll('.connection-line');
+            
+            lines.forEach(line => {
+                const fromId = parseInt(line.dataset.from);
+                const toId = parseInt(line.dataset.to);
+                const fromMove = document.querySelector(`[data-id="${fromId}"]`);
+                const toMove = document.querySelector(`[data-id="${toId}"]`);
+                
+                if (fromMove && toMove) {
+                    const fromRect = fromMove.getBoundingClientRect();
+                    const toRect = toMove.getBoundingClientRect();
+                    const canvasRect = document.getElementById('canvas').getBoundingClientRect();
+                    
+                    const x1 = fromRect.left - canvasRect.left + fromRect.width / 2;
+                    const y1 = fromRect.top - canvasRect.top + fromRect.height / 2;
+                    const x2 = toRect.left - canvasRect.left + toRect.width / 2;
+                    const y2 = toRect.top - canvasRect.top + toRect.height / 2;
+                    
+                    line.setAttribute('x1', x1);
+                    line.setAttribute('y1', y1);
+                    line.setAttribute('x2', x2);
+                    line.setAttribute('y2', y2);
+                }
+            });
+        }
 
         function toggleMode() {
             deleteMode = !deleteMode;
-            const modeBtn = document.getElementById('modeToggleButton');
+            const btn = document.getElementById('modeToggleButton');
             const instructionText = document.getElementById('instructionText');
             
             if (deleteMode) {
-                // Delete mode
-                modeBtn.textContent = 'Delete Mode';
-                modeBtn.style.background = '#ff4444';
-                modeBtn.style.borderColor = '#ff4444';
-                modeBtn.style.color = 'white';
+                btn.textContent = 'Delete Mode';
+                btn.style.background = '#ff4444';
+                btn.style.borderColor = '#ff4444';
                 instructionText.innerHTML = `
-                    <div style="font-size: 14px; color: #aaa;">Hold a move for 2 seconds to delete a move</div>
-                    <div style="font-size: 14px; color: #aaa; margin-top: 4px;">Press delete mode button to go back to information mode</div>
+                    <div>Hold a move for 2 seconds to delete it</div>
+                    <div>Press delete mode button to go back to info mode</div>
                 `;
             } else {
-                // Info mode
-                modeBtn.textContent = 'Info Move';
-                modeBtn.style.background = '#0066cc';
-                modeBtn.style.borderColor = '#0066cc';
-                modeBtn.style.color = 'white';
+                btn.textContent = 'Info Mode';
+                btn.style.background = '#222';
+                btn.style.borderColor = '#444';
                 instructionText.innerHTML = `
-                    <div style="font-size: 14px; color: #aaa;">Hold to open more information on a move</div>
-                    <div style="font-size: 14px; color: #aaa; margin-top: 4px;">Press info move button to change to delete move mode</div>
+                    <div>Hold to view more information on a move</div>
+                    <div>Press info mode button to change to delete mode</div>
                 `;
             }
         }
 
-        function handleMoveClick(event, moveName) {
-            event.stopPropagation();
-            // Click doesn't do anything - hold is used for both modes
-        }
-
+        // ============================================
+        // SIDEBAR MANAGEMENT
+        // ============================================
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const hamburger = document.querySelector('.hamburger');
             sidebar.classList.toggle('open');
             hamburger.classList.toggle('active');
+        }
+
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('open');
+            document.querySelector('.hamburger').classList.remove('active');
         }
 
         // Close sidebar when clicking outside
@@ -608,11 +955,13 @@
             if (sidebar.classList.contains('open') && 
                 !sidebar.contains(e.target) && 
                 !hamburger.contains(e.target)) {
-                sidebar.classList.remove('open');
-                hamburger.classList.remove('active');
+                closeSidebar();
             }
         });
 
+        // ============================================
+        // MAP MANAGEMENT
+        // ============================================
         function switchMap(mapId) {
             window.location.href = `/moves/${mapId}`;
         }
@@ -621,16 +970,23 @@
             const input = document.getElementById('newMapName');
             const name = input.value.trim();
             
-            if (!name) return;
+            if (!name) {
+                alert('Please enter a map name');
+                return;
+            }
             
             fetch('/create_map', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name: name })
-            }).then(res => res.json())
-              .then(data => {
-                  window.location.href = `/moves/${data.id}`;
-              });
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.id) {
+                    window.location.href = `/moves/${data.id}`;
+                }
+            })
+            .catch(err => console.error('Error creating map:', err));
         }
 
         function deleteMap(event, mapId) {
@@ -642,11 +998,63 @@
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ map_id: mapId })
-            }).then(() => {
+            })
+            .then(() => {
                 window.location.href = '/moves/1';
-            });
+            })
+            .catch(err => console.error('Error deleting map:', err));
         }
 
+        // ============================================
+        // MOVE MANAGEMENT
+        // ============================================
+        function handleMoveClick(event, moveName) {
+            event.stopPropagation();
+            // Hold is used for both modes
+        }
+
+        function addMove() {
+            const input = document.getElementById('moveInput');
+            const name = input.value.trim();
+            
+            if (!name) {
+                alert('Please enter a move name');
+                return;
+            }
+            
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/moves/${currentMapId}`;
+            
+            const nameInput = document.createElement('input');
+            nameInput.type = 'hidden';
+            nameInput.name = 'name';
+            nameInput.value = name;
+            
+            form.appendChild(nameInput);
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+        function deleteMove(event, moveId) {
+            if (event) event.stopPropagation();
+            
+            if (!confirm('Delete this move?')) return;
+            
+            fetch('/delete_move', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ move_id: moveId })
+            })
+            .then(() => {
+                location.reload();
+            })
+            .catch(err => console.error('Error deleting move:', err));
+        }
+
+        // ============================================
+        // AUTOCOMPLETE
+        // ============================================
         function showAutocomplete(value) {
             const dropdown = document.getElementById('autocompleteDropdown');
             
@@ -677,68 +1085,275 @@
             document.getElementById('autocompleteDropdown').classList.remove('show');
         }
 
-        function addMove() {
-            const input = document.getElementById('moveInput');
-            const name = input.value.trim();
-            
-            if (!name) return;
-            
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = `/moves/${currentMapId}`;
-            
-            const nameInput = document.createElement('input');
-            nameInput.type = 'hidden';
-            nameInput.name = 'name';
-            nameInput.value = name;
-            
-            form.appendChild(nameInput);
-            document.body.appendChild(form);
-            form.submit();
-        }
-
-        function openMoveProfile(moveName) {
-            window.open(`/move_profile/${encodeURIComponent(moveName)}`, '_blank', 'width=600,height=700');
-        }
-
-        function deleteMove(event, moveId) {
-            event.stopPropagation();
-            
-            if (!confirm('Delete this move?')) return;
-            
-            fetch('/delete_move', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ move_id: moveId })
-            }).then(() => {
-                location.reload();
-            });
-        }
-
         // Close autocomplete when clicking outside
         document.addEventListener('click', (e) => {
-            if (!e.target.closest('form')) {
+            if (!e.target.closest('#moveInput')) {
                 document.getElementById('autocompleteDropdown').classList.remove('show');
             }
         });
 
-        // Ensure move input focuses on click (Safari converts touch to click)
-        const moveInput = document.getElementById('moveInput');
-        if (moveInput) {
-        // Ensure move input focuses on click (Safari converts touch to click)
+        // ============================================
+        // INPUT HANDLING
+        // ============================================
         const moveInput = document.getElementById('moveInput');
         if (moveInput) {
             moveInput.addEventListener('click', function() {
-                console.log('Move input clicked, focusing...');
                 this.focus();
+            });
+            
+            moveInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    addMove();
+                }
             });
         }
 
-        // PWA mode detection and debugging
-        console.log('Running in PWA standalone mode:', window.navigator.standalone === true);
-        console.log('User agent:', navigator.userAgent);
-    </script>
+        // ============================================
+        // HOLD INTERACTION & MOVE PROFILE
+        // ============================================
+        const HOLD_DURATION = 1750; // 1.75 seconds in milliseconds
+        const HOLD_THRESHOLD = 20; // pixels
+        let holdState = {
+            isHolding: false,
+            isDragging: false,
+            moveElement: null,
+            moveId: null,
+            startTime: null,
+            startX: null,
+            startY: null,
+            timeoutId: null,
+            indicatorElement: null,
+            textElement: null,
+            textTimeoutId: null,
+            offsetX: 0,
+            offsetY: 0,
+            canvasRect: null
+        };
 
-    <script src="{{ url_for('static', filename='drag.js') }}"></script>
+        function startHold(event, moveElement, moveId) {
+            if (connectMode) return; // Don't hold while in connect mode
+            
+            const rect = moveElement.getBoundingClientRect();
+            const canvas = document.getElementById('canvas');
+            const canvasRect = canvas.getBoundingClientRect();
+            
+            holdState = {
+                isHolding: true,
+                isDragging: false,
+                moveElement: moveElement,
+                moveId: moveId,
+                startTime: Date.now(),
+                startX: event.clientX,
+                startY: event.clientY,
+                timeoutId: null,
+                indicatorElement: null,
+                offsetX: event.clientX - rect.left,
+                offsetY: event.clientY - rect.top,
+                canvasRect: canvasRect
+            };
+
+            // Show dial in both modes
+            if (!connectMode && !holdState.isDragging) {
+                const indicator = document.createElement('div');
+                indicator.className = 'hold-indicator';
+                moveElement.appendChild(indicator);
+                holdState.indicatorElement = indicator;
+
+                // Show floating text after 0.5 seconds
+                holdState.textTimeoutId = setTimeout(() => {
+                    if (holdState.isHolding && holdState.moveElement === moveElement) {
+                        const text = document.createElement('div');
+                        text.className = 'hold-text';
+                        text.textContent = deleteMode ? 'click and hold to delete move' : 'click and hold to open move info';
+                        moveElement.appendChild(text);
+                        holdState.textElement = text;
+                    }
+                }, 500);
+
+                // Set action timeout
+                if (deleteMode) {
+                    holdState.timeoutId = setTimeout(() => {
+                        if (holdState.isHolding && holdState.moveElement === moveElement && !holdState.isDragging) {
+                            deleteMove(null, moveId);
+                        }
+                    }, HOLD_DURATION);
+                } else {
+                    holdState.timeoutId = setTimeout(() => {
+                        if (holdState.isHolding && holdState.moveElement === moveElement && !holdState.isDragging) {
+                            showMoveProfile(holdState.moveId);
+                        }
+                    }, HOLD_DURATION);
+                }
+            }
+        }
+
+        function endHold(event) {
+            if (!holdState.isHolding) return;
+
+            // If was dragging, save the new position
+            if (holdState.isDragging) {
+                const moveId = holdState.moveId;
+                const x = parseInt(holdState.moveElement.style.left);
+                const y = parseInt(holdState.moveElement.style.top);
+                
+                // Save position to backend
+                fetch('/update_move_position', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        move_id: moveId,
+                        x: x,
+                        y: y
+                    })
+                })
+                .catch(err => console.error('Error updating move position:', err));
+            }
+
+            clearHold();
+        }
+
+        function onMoveMouseMove(event) {
+            if (!holdState.isHolding) return;
+
+            const distance = Math.sqrt(
+                Math.pow(event.clientX - holdState.startX, 2) + 
+                Math.pow(event.clientY - holdState.startY, 2)
+            );
+
+            // If moved past threshold, start dragging
+            if (distance > HOLD_THRESHOLD && !holdState.isDragging) {
+                holdState.isDragging = true;
+                
+                // Cancel the hold timeout and remove indicator
+                if (holdState.timeoutId) {
+                    clearTimeout(holdState.timeoutId);
+                    holdState.timeoutId = null;
+                }
+                if (holdState.indicatorElement) {
+                    holdState.indicatorElement.remove();
+                    holdState.indicatorElement = null;
+                }
+            }
+
+            // If dragging, update position
+            if (holdState.isDragging) {
+                const canvas = document.getElementById('canvas');
+                const newX = event.clientX - holdState.canvasRect.left - holdState.offsetX;
+                const newY = event.clientY - holdState.canvasRect.top - holdState.offsetY;
+                
+                // Keep within canvas bounds
+                const x = Math.max(0, Math.min(newX, holdState.canvasRect.width - holdState.moveElement.offsetWidth));
+                const y = Math.max(0, Math.min(newY, holdState.canvasRect.height - holdState.moveElement.offsetHeight));
+                
+                holdState.moveElement.style.left = x + 'px';
+                holdState.moveElement.style.top = y + 'px';
+                
+                // Update connection lines in real-time
+                drawConnectionLines();
+            }
+        }
+
+        function clearHold() {
+            if (holdState.timeoutId) {
+                clearTimeout(holdState.timeoutId);
+            }
+            if (holdState.textTimeoutId) {
+                clearTimeout(holdState.textTimeoutId);
+            }
+            if (holdState.indicatorElement) {
+                holdState.indicatorElement.remove();
+            }
+            if (holdState.textElement) {
+                holdState.textElement.remove();
+            }
+            holdState.isHolding = false;
+            holdState.isDragging = false;
+            holdState.moveElement = null;
+            holdState.moveId = null;
+        }
+
+        function showMoveProfile(moveId) {
+            const moveName = document.querySelector(`[data-id="${moveId}"] .move-name`).textContent;
+            window.location.href = `/move_profile/${encodeURIComponent(moveName)}`;
+        }
+
+        function closeProfileModal() {
+            document.getElementById('profileModal').classList.remove('show');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('profileModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeProfileModal();
+            }
+        });
+
+        // Setup hold listeners for all moves
+        function setupMoveHoldListeners() {
+            const moves = document.querySelectorAll('.move');
+            moves.forEach(move => {
+                const moveId = move.dataset.id;
+                
+                move.addEventListener('mousedown', (e) => {
+                    startHold(e, move, moveId);
+                }, false);
+            });
+        }
+
+        // Attach global mouse listeners for drag tracking
+        document.addEventListener('mousemove', onMoveMouseMove, false);
+        document.addEventListener('mouseup', endHold, false);
+
+        // Setup line deletion
+        function setupLineClickHandlers() {
+            const lines = document.querySelectorAll('.connection-line');
+            lines.forEach(line => {
+                line.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (confirm('Delete this connection?')) {
+                        const fromId = line.dataset.from;
+                        const toId = line.dataset.to;
+                        
+                        fetch('/delete_transition', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                from_move_id: fromId,
+                                to_move_id: toId
+                            })
+                        })
+                        .then(() => {
+                            line.remove();
+                        })
+                        .catch(err => console.error('Error deleting connection:', err));
+                    }
+                });
+            });
+        }
+
+        // Initialize on page load
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                setTimeout(() => {
+                    drawConnectionLines();
+                    setupMoveHoldListeners();
+                    setupLineClickHandlers();
+                }, 50);
+            });
+        } else {
+            setTimeout(() => {
+                drawConnectionLines();
+                setupMoveHoldListeners();
+                setupLineClickHandlers();
+            }, 50);
+        }
+
+        // ============================================
+        // PWA DETECTION
+        // ============================================
+        if (window.navigator.standalone === true) {
+            console.log('Running in PWA standalone mode');
+        }
+    </script>
 </body>
 </html>

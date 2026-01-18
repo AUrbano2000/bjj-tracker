@@ -130,14 +130,14 @@ def moves(map_id=1):
                          current_map_name=current_map_name)
 
 
-@app.route("/save_position", methods=["POST"])
-def save_position():
+@app.route("/update_move_position", methods=["POST"])
+def update_move_position():
     data = request.get_json()
 
     db = get_db()
     db.execute(
         "UPDATE moves SET x = ?, y = ? WHERE id = ?",
-        (data["x"], data["y"], data["id"])
+        (data["x"], data["y"], data["move_id"])
     )
     db.commit()
     db.close()
