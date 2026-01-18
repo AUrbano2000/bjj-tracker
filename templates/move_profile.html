@@ -269,12 +269,10 @@
             </div>
         </div>
 
-        {% if hit_history %}
         <div class="graph-section">
             <h2>📊 Training Sessions Progress</h2>
             <canvas id="hitGraph"></canvas>
         </div>
-        {% endif %}
 
         <div class="notes-section">
             <h2>📝 Notes & Tips</h2>
@@ -290,7 +288,6 @@
         let todayHits = {{ today_hits }};
         let dailyBest = {{ daily_best }};
 
-        {% if hit_history %}
         // Draw graph - Sessions (X-axis) vs Hits per Session (Y-axis)
         const canvas = document.getElementById('hitGraph');
         const ctx = canvas.getContext('2d');
@@ -397,8 +394,13 @@
             ctx.font = '12px system-ui';
             ctx.textAlign = 'center';
             ctx.fillText('Training Session', canvas.width / 2, canvas.height - 5);
+        } else {
+            // Show empty state message
+            ctx.fillStyle = '#666';
+            ctx.font = '16px system-ui';
+            ctx.textAlign = 'center';
+            ctx.fillText('No data yet - start logging hits to see your progress!', canvas.width / 2, canvas.height / 2);
         }
-        {% endif %}
 
         function incrementHitCount() {
             todayHits++;
