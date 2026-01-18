@@ -450,9 +450,9 @@
         <h3>📍 Move Maps</h3>
         <div class="map-list">
             {% for map in maps %}
-                <div class="map-item {% if map.id == current_map_id %}active{% endif %}">
+                <div class="map-item {% if map.id == current_map_id %}active{% endif %}" onclick="switchMap({{ map.id }})">
                     <div class="map-item-header">
-                        <span onclick="switchMap({{ map.id }})">{{ map.name }}</span>
+                        <span>{{ map.name }}</span>
                         {% if maps|length > 1 %}
                         <span class="delete-map-btn" onclick="deleteMap(event, {{ map.id }})">×</span>
                         {% endif %}
@@ -520,6 +520,19 @@
             sidebar.classList.toggle('open');
             hamburger.classList.toggle('active');
         }
+
+        // Close sidebar when clicking outside
+        document.addEventListener('click', function(e) {
+            const sidebar = document.getElementById('sidebar');
+            const hamburger = document.querySelector('.hamburger');
+            
+            if (sidebar.classList.contains('open') && 
+                !sidebar.contains(e.target) && 
+                !hamburger.contains(e.target)) {
+                sidebar.classList.remove('open');
+                hamburger.classList.remove('active');
+            }
+        });
 
         function switchMap(mapId) {
             window.location.href = `/moves/${mapId}`;
