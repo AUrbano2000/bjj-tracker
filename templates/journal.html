@@ -563,6 +563,22 @@
             }
         }
 
+        // Double-tap to focus textarea on mobile
+        let lastTapTime = 0;
+        const textarea = document.querySelector('textarea[name="content"]');
+        textarea.addEventListener('touchend', function(e) {
+            const currentTime = new Date().getTime();
+            const tapTimeDiff = currentTime - lastTapTime;
+            
+            if (tapTimeDiff < 300 && tapTimeDiff > 0) {
+                // Double tap detected
+                e.preventDefault();
+                this.focus();
+                this.click();
+            }
+            lastTapTime = currentTime;
+        });
+
         function loadCheckIns() {
             fetch('/get_check_ins')
                 .then(res => res.json())
