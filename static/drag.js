@@ -81,16 +81,44 @@ setupLineClickHandlers();
 
 document.querySelectorAll(".move").forEach(move => {
   let offsetX, offsetY, dragging = false;
+  let longPressTimer = null;
+  let longPressPopup = null;
+  let hasMoved = false;
 
   // Helper to get position from mouse or touch event
   function getEventPosition(e) {
     if (e.touches && e.touches.length > 0) {
-      return { pageX: e.touches[0].pageX, pageY: e.touches[0].pageY };
+      return { clientX: e.touches[0].clientX, clientY: e.touches[0].clientY };
     }
-    return { pageX: e.pageX, pageY: e.pageY };
+    return { clientX: e.clientX, clientY: e.clientY };
+  }
+
+  function showLongPressPopup() {
+    longPressPopup = document.createElement('div');
+    longPressPopup.style.position = 'fixed';
+    longPressPopup.style.top = '50%';
+    longPressPopup.style.left = '50%';
+    longPressPopup.style.transform = 'translate(-50%, -50%)';
+    longPressPopup.style.background = '#0066cc';
+    longPressPopup.style.color = 'white';
+    longPressPopup.style.padding = '15px 25px';
+    longPressPopup.style.borderRadius = '8px';
+    longPressPopup.style.fontSize = '16px';
+    longPressPopup.style.zIndex = '10000';
+    longPressPopup.textContent = 'Hold to delete move';
+    document.body.appendChild(longPressPopup);
+  }
+
+  function removeLongPressPopup() {
+    if (longPressPopup) {
+      longPressPopup.remove();
+      longPressPopup = null;
+    }
   }
 
   function handleStart(e) {
+    hasMoved = false;
+    
     if (connectMode) {
       // Connect mode: select moves to connect
       e.preventDefault();
@@ -129,36 +157,62 @@ document.querySelectorAll(".move").forEach(move => {
       // Drag mode
       dragging = true;
       const pos = getEventPosition(e);
-      const rect = move.getBoundingClientRect();
-      offsetX = pos.pageX - rect.left;
-      offsetY = pos.pageY - rect.top;
+      const canvas = document.getElementById("canvas").getBoundingClientRect();
+      offsetX = pos.clientX - move.getBoundingClientRect().left;
+      offsetY = pos.clientY - move.getBoundingClientRect().top;
       e.preventDefault();
+
+      // Start long press timer
+      showLongPressPopup();
+      longPressTimer = setTimeout(() => {
+        removeLongPressPopup();
+        // Remove from map (hide it)
+        move.style.display = 'none';
+        dragging = false;
+      }, 3000);
     }
   }
 
   function handleMove(e) {
     if (!dragging) return;
+    hasMoved = true;
     e.preventDefault();
 
+    // Cancel long press if user starts dragging
+    if (longPressTimer) {
+      clearTimeout(longPressTimer);
+      removeLongPressPopup();
+      longPressTimer = null;
+    }
+
     const pos = getEventPosition(e);
-    move.style.left = pos.pageX - offsetX + "px";
-    move.style.top  = pos.pageY - offsetY + "px";
+    const canvas = document.getElementById("canvas").getBoundingClientRect();
+    move.style.left = (pos.clientX - canvas.left - offsetX) + "px";
+    move.style.top = (pos.clientY - canvas.top - offsetY) + "px";
     updateLines();
   }
 
   function handleEnd() {
+    if (longPressTimer) {
+      clearTimeout(longPressTimer);
+      removeLongPressPopup();
+      longPressTimer = null;
+    }
+
     if (!dragging) return;
     dragging = false;
 
-    fetch("/save_position", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        id: move.dataset.id,
-        x: parseInt(move.style.left),
-        y: parseInt(move.style.top)
-      })
-    });
+    if (hasMoved) {
+      fetch("/save_position", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: move.dataset.id,
+          x: parseInt(move.style.left),
+          y: parseInt(move.style.top)
+        })
+      });
+    }
   }
 
   // Mouse events

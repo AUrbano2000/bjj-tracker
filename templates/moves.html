@@ -252,7 +252,7 @@
 
       .move {
         position: absolute;
-        padding: 10px 16px;
+        padding: 14px 20px;
         background: #222;
         color: white;
         border: 1px solid #444;
@@ -262,6 +262,9 @@
         display: flex;
         align-items: center;
         gap: 8px;
+        font-size: 16px;
+        min-width: 100px;
+        min-height: 44px;
       }
 
       .move:active {
@@ -478,7 +481,7 @@
         </div>
       </div>
       <form method="POST" onsubmit="return false;" style="position: relative;">
-        <input id="moveInput" name="name" placeholder="Move name" required autocomplete="off"
+        <input id="moveInput" name="name" placeholder="Enter move name here" required autocomplete="off"
                oninput="showAutocomplete(this.value)">
         <div class="autocomplete-dropdown" id="autocompleteDropdown"></div>
         <button type="button" onclick="addMove()">Add Move</button>
@@ -486,6 +489,10 @@
     </header>
 
     <div id="canvas">
+      <div style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%); text-align: center; opacity: 0.7; pointer-events: none; z-index: 1;">
+        <div style="font-size: 14px; color: #aaa;">Hold to delete move</div>
+        <div style="font-size: 14px; color: #aaa; margin-top: 4px;">Double click to look into a move</div>
+      </div>
       <svg id="lines-layer">
         <defs>
           <marker id="arrowhead" markerWidth="10" markerHeight="10" 
@@ -504,7 +511,7 @@
         <div class="move"
              data-id="{{ move.id }}"
              style="left: {{ move.x }}px; top: {{ move.y }}px;">
-          <span class="move-name" onclick="openMoveProfile('{{ move.name }}')">{{ move.name }}</span>
+          <span class="move-name" ondblclick="openMoveProfile('{{ move.name }}')">{{ move.name }}</span>
           <span class="delete-move-btn" onclick="deleteMove(event, {{ move.id }})" title="Delete move">×</span>
         </div>
       {% endfor %}
