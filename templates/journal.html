@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jiu Jitsu Journal</title>
     <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
     <meta name="theme-color" content="#0066cc">
@@ -585,9 +585,8 @@
         // Ensure textarea focuses on mobile tap
         const textarea = document.querySelector('textarea[name="content"]');
         if (textarea) {
-            textarea.addEventListener('touchstart', function(e) {
-                e.stopPropagation();
-                setTimeout(() => this.focus(), 0);
+            textarea.addEventListener('click', function() {
+                this.focus();
             });
         }
 

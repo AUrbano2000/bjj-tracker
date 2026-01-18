@@ -686,12 +686,11 @@
             }
         });
 
-        // Ensure move input focuses on mobile tap
+        // Ensure move input focuses on click
         const moveInput = document.getElementById('moveInput');
         if (moveInput) {
-            moveInput.addEventListener('touchstart', function(e) {
-                e.stopPropagation();
-                setTimeout(() => this.focus(), 0);
+            moveInput.addEventListener('click', function() {
+                this.focus();
             });
         }
     </script>

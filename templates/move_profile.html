@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ profile.name }} - Move Profile</title>
     <style>
         * {
@@ -442,9 +442,8 @@
         // Ensure textarea focuses on mobile tap
         const notesTextarea = document.querySelector('textarea[name="notes"]');
         if (notesTextarea) {
-            notesTextarea.addEventListener('touchstart', function(e) {
-                e.stopPropagation();
-                setTimeout(() => this.focus(), 0);
+            notesTextarea.addEventListener('click', function() {
+                this.focus();
             });
         }
     </script>
