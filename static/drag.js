@@ -256,8 +256,8 @@ document.querySelectorAll(".move").forEach(move => {
     const pos = getEventPosition(e);
     const distance = Math.sqrt(Math.pow(pos.clientX - startX, 2) + Math.pow(pos.clientY - startY, 2));
     
-    // If moved more than 5px, cancel long press
-    if (distance > 5) {
+    // If moved more than 20px, cancel long press
+    if (distance > 20) {
       hasMoved = true;
       if (showPopupTimer) {
         clearTimeout(showPopupTimer);
