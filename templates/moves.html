@@ -217,13 +217,7 @@
         header h2 {
             font-size: 18px;
             font-weight: 600;
-            margin: 0 0 0 20px;
-        }
-
-        .header-controls {
-            display: flex;
-            gap: 10px;
-            align-items: center;
+            margin: 0;
         }
 
         .mode-indicator {
@@ -275,6 +269,21 @@
             align-items: center;
             margin-top: 10px;
             position: relative;
+            justify-content: space-between;
+        }
+
+        .form-input-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex: 1;
+            position: relative;
+        }
+
+        .form-mode-buttons {
+            display: flex;
+            gap: 8px;
+            align-items: center;
         }
 
         #moveInput {
@@ -730,25 +739,26 @@
     <!-- Header -->
     <header>
         <div class="header-top">
-            <h2>{{ current_map_name }} Move Map</h2>
-            <div class="header-controls">
-                <div class="mode-indicator" id="connectModeButton" onclick="toggleConnectMode()" title="Connect moves">Click to connect moves</div>
-                <div class="mode-indicator" id="modeToggleButton" onclick="toggleMode()">Info Mode</div>
-                <a href="/" class="nav-button">← Back to Journal</a>
-            </div>
+            <div class="mode-indicator" id="connectModeButton" onclick="toggleConnectMode()" title="Connect moves">Click to connect moves</div>
+            <a href="/" class="nav-button">← Back to Journal</a>
         </div>
 
         <div class="form-section">
-            <input 
-                id="moveInput" 
-                type="text"
-                name="name" 
-                placeholder="Enter move name..." 
-                autocomplete="off"
-                oninput="showAutocomplete(this.value)"
-            >
-            <div class="autocomplete-dropdown" id="autocompleteDropdown"></div>
-            <button type="button" onclick="addMove()">Add Move</button>
+            <div class="form-input-group">
+                <input 
+                    id="moveInput" 
+                    type="text"
+                    name="name" 
+                    placeholder="Enter move name..." 
+                    autocomplete="off"
+                    oninput="showAutocomplete(this.value)"
+                >
+                <div class="autocomplete-dropdown" id="autocompleteDropdown"></div>
+                <button type="button" onclick="addMove()">Add Move</button>
+            </div>
+            <div class="form-mode-buttons">
+                <div class="mode-indicator" id="modeToggleButton" onclick="toggleMode()">Info Mode</div>
+            </div>
         </div>
     </header>
 
@@ -757,6 +767,7 @@
         <div class="instruction-overlay" id="instructionText">
             <div>Hold to view more information on a move</div>
             <div>Press info mode button to change to delete mode</div>
+            <div>Click connection lines to delete them</div>
         </div>
 
         <!-- SVG Lines Layer -->
@@ -920,6 +931,7 @@
                 instructionText.innerHTML = `
                     <div>Hold a move for 2 seconds to delete it</div>
                     <div>Press delete mode button to go back to info mode</div>
+                    <div>Click connection lines to delete them</div>
                 `;
             } else {
                 btn.textContent = 'Info Mode';
@@ -928,6 +940,7 @@
                 instructionText.innerHTML = `
                     <div>Hold to view more information on a move</div>
                     <div>Press info mode button to change to delete mode</div>
+                    <div>Click connection lines to delete them</div>
                 `;
             }
         }
