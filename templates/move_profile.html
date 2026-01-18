@@ -439,14 +439,10 @@
             }, 100);
         });
 
-        // Ensure textarea focuses on both click and touch
+        // Ensure textarea focuses on click (Safari converts touch to click)
         const notesTextarea = document.querySelector('textarea[name="notes"]');
         if (notesTextarea) {
             notesTextarea.addEventListener('click', function() {
-                this.focus();
-            });
-            notesTextarea.addEventListener('touchend', function(e) {
-                // Don't prevent default - let browser handle it
                 this.focus();
             });
         }

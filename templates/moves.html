@@ -686,14 +686,10 @@
             }
         });
 
-        // Ensure move input focuses on both click and touch
+        // Ensure move input focuses on click (Safari converts touch to click)
         const moveInput = document.getElementById('moveInput');
         if (moveInput) {
             moveInput.addEventListener('click', function() {
-                this.focus();
-            });
-            moveInput.addEventListener('touchend', function(e) {
-                // Don't prevent default - let browser handle it
                 this.focus();
             });
         }
