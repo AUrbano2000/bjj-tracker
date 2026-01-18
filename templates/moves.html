@@ -28,17 +28,30 @@
         pointer-events: auto;
         -webkit-user-select: text;
         user-select: text;
+        font-size: 16px;
+      }
+
+      /* Hamburger Container */
+      .hamburger-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 70px;
+        height: 70px;
+        background: #111;
+        border-bottom: 1px solid #333;
+        border-right: 1px solid #333;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
       }
 
       /* Hamburger Menu */
       .hamburger {
-        position: fixed;
-        top: 20px;
-        left: 20px;
         width: 30px;
         height: 24px;
         cursor: pointer;
-        z-index: 2000;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -161,7 +174,7 @@
       }
 
       header {
-        padding: 20px 20px 20px 70px;
+        padding: 20px 20px 20px 20px;
         background: #111;
         border-bottom: 1px solid #333;
         position: relative;
@@ -459,11 +472,13 @@
     </style>
 </head>
 <body>
-    <!-- Hamburger Menu -->
-    <div class="hamburger" onclick="toggleSidebar()">
-        <span></span>
-        <span></span>
-        <span></span>
+    <!-- Hamburger Menu Container -->
+    <div class="hamburger-container">
+        <div class="hamburger" onclick="toggleSidebar()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
     </div>
 
     <!-- Sidebar with Move Maps -->
@@ -488,24 +503,27 @@
         </div>
     </div>
 
-    <header>
-      <div class="header-top">
-        <h2>{{ current_map_name }} Move Map</h2>
-        <div class="header-controls">
-          <div class="mode-indicator" id="mode-indicator" onclick="toggleConnectMode()">Drag Mode</div>
-          <div class="top-nav">
-            <a href="/" class="nav-button">← Back to Journal</a>
+    <!-- Header Container -->
+    <div class="header-container">
+        <header>
+          <div class="header-top">
+            <h2>{{ current_map_name }} Move Map</h2>
+            <div class="header-controls">
+              <div class="mode-indicator" id="mode-indicator" onclick="toggleConnectMode()">Drag Mode</div>
+              <div class="top-nav">
+                <a href="/" class="nav-button">← Back to Journal</a>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-      <form method="POST" onsubmit="return false;" style="position: relative; display: flex; gap: 8px; align-items: center;">
-        <input id="moveInput" name="name" placeholder="Enter move name here" required autocomplete="off"
-               oninput="showAutocomplete(this.value)">
-        <div class="autocomplete-dropdown" id="autocompleteDropdown"></div>
-        <button type="button" onclick="addMove()">Add Move</button>
-        <button type="button" id="modeToggleButton" onclick="toggleMode()" style="padding: 8px 16px; background: #0066cc; color: white; border: 2px solid #0066cc; border-radius: 4px; cursor: pointer; font-weight: 500;">Info Move</button>
-      </form>
-    </header>
+          <form method="POST" onsubmit="return false;" style="position: relative; display: flex; gap: 8px; align-items: center;">
+            <input id="moveInput" name="name" placeholder="Enter move name here" required autocomplete="off"
+                   oninput="showAutocomplete(this.value)">
+            <div class="autocomplete-dropdown" id="autocompleteDropdown"></div>
+            <button type="button" onclick="addMove()">Add Move</button>
+            <button type="button" id="modeToggleButton" onclick="toggleMode()" style="padding: 8px 16px; background: #0066cc; color: white; border: 2px solid #0066cc; border-radius: 4px; cursor: pointer; font-weight: 500;">Info Move</button>
+          </form>
+        </header>
+    </div>
 
     <div id="canvas">
       <div id="instructionText" style="position: absolute; top: 10px; left: 20px; text-align: left; opacity: 0.7; pointer-events: none; z-index: 1;">
