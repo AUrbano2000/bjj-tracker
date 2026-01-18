@@ -538,6 +538,11 @@
             const sidebar = document.getElementById('sidebar');
             const hamburger = document.querySelector('.hamburger');
             
+            // Don't close sidebar if clicking on form elements (textarea, input, button)
+            if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') {
+                return;
+            }
+            
             if (sidebar.classList.contains('open') && 
                 !sidebar.contains(e.target) && 
                 !hamburger.contains(e.target)) {
@@ -557,6 +562,12 @@
                 document.getElementById('entryModal').classList.remove('show');
             }
         }
+
+        // Ensure textarea focuses on mobile tap
+        document.querySelector('textarea[name="content"]').addEventListener('touchstart', function(e) {
+            e.stopPropagation();
+            this.focus();
+        }, { passive: false });
 
         function loadCheckIns() {
             fetch('/get_check_ins')
