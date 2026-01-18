@@ -100,6 +100,12 @@
             font-size: 18px;
         }
 
+        input, textarea {
+            pointer-events: auto;
+            -webkit-user-select: text;
+            user-select: text;
+        }
+
         textarea {
             width: 100%;
             min-height: 200px;
@@ -447,9 +453,14 @@
         const notesTextarea = document.querySelector('textarea[name="notes"]');
         if (notesTextarea) {
             notesTextarea.addEventListener('click', function() {
+                console.log('Notes textarea clicked, focusing...');
                 this.focus();
             });
         }
+
+        // PWA mode detection and debugging
+        console.log('Running in PWA standalone mode:', window.navigator.standalone === true);
+        console.log('User agent:', navigator.userAgent);
     </script>
 </body>
 </html>

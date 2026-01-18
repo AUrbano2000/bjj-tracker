@@ -193,6 +193,12 @@
             margin-bottom: 30px;
         }
 
+        input, textarea {
+            pointer-events: auto;
+            -webkit-user-select: text;
+            user-select: text;
+        }
+
         textarea {
             width: 100%;
             padding: 12px;
@@ -648,6 +654,18 @@
 
         // Load calendar on page load
         loadCheckIns();
+
+        // PWA mode detection and debugging
+        console.log('Running in PWA standalone mode:', window.navigator.standalone === true);
+        console.log('User agent:', navigator.userAgent);
+
+        // Ensure textarea focus works properly
+        document.querySelectorAll('textarea').forEach(textarea => {
+            textarea.addEventListener('click', () => {
+                console.log('Textarea clicked, focusing...');
+                textarea.focus();
+            });
+        });
 
         // Register service worker for PWA
         if ('serviceWorker' in navigator) {

@@ -24,6 +24,12 @@
         overflow: hidden;
       }
 
+      input, textarea {
+        pointer-events: auto;
+        -webkit-user-select: text;
+        user-select: text;
+      }
+
       /* Hamburger Menu */
       .hamburger {
         position: fixed;
@@ -699,10 +705,18 @@
         // Ensure move input focuses on click (Safari converts touch to click)
         const moveInput = document.getElementById('moveInput');
         if (moveInput) {
+        // Ensure move input focuses on click (Safari converts touch to click)
+        const moveInput = document.getElementById('moveInput');
+        if (moveInput) {
             moveInput.addEventListener('click', function() {
+                console.log('Move input clicked, focusing...');
                 this.focus();
             });
         }
+
+        // PWA mode detection and debugging
+        console.log('Running in PWA standalone mode:', window.navigator.standalone === true);
+        console.log('User agent:', navigator.userAgent);
     </script>
 
     <script src="{{ url_for('static', filename='drag.js') }}"></script>
