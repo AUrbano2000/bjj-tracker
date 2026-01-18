@@ -514,7 +514,7 @@
         </div>
 
         <div class="journal-form">
-            <form method="POST">
+            <form method="GET" "POST">
                 <textarea name="content" rows="8" placeholder="What did you work on today?" required></textarea>
                 <button type="submit">💾 Save Entry</button>
             </form>
@@ -522,7 +522,7 @@
     </div>
 
     <script>
-        const entries = {{ entries | tojson }};
+        const journalEntries = {{ entries | tojson }};
         let checkIns = [];
         // Get today's date in local timezone
         const now = new Date();
@@ -556,7 +556,7 @@
         });
 
         function showEntry(index) {
-            const entry = entries[index];
+            const entry = journalEntries[index];
             document.getElementById('modalTime').textContent = entry.timestamp;
             document.getElementById('modalText').textContent = entry.content;
             document.getElementById('entryModal').classList.add('show');
