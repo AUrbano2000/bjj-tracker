@@ -519,60 +519,53 @@
     <script>
         const moveProfiles = {{ move_profiles | tojson }};
         const currentMapId = {{ current_map_id }};
-        let clickedMove = null;
-        let clickPopup = null;
+        let currentMovePopup = null;
 
         function handleMoveClick(event, moveName) {
             event.stopPropagation();
             
-            if (clickedMove === moveName) {
-                // Second click - open the move
-                removeClickPopup();
-                openMoveProfile(moveName);
-                clickedMove = null;
-            } else {
-                // First click - show popup
-                clickedMove = moveName;
-                showClickPopup();
-                
-                // Auto-hide after 3 seconds
-                setTimeout(() => {
-                    if (clickedMove === moveName) {
-                        removeClickPopup();
-                        clickedMove = null;
-                    }
-                }, 3000);
-            }
-        }
-
-        function showClickPopup() {
+            // Remove any existing popup
             removeClickPopup();
-            clickPopup = document.createElement('div');
-            clickPopup.style.position = 'fixed';
-            clickPopup.style.bottom = '20px';
-            clickPopup.style.left = '20px';
-            clickPopup.style.background = '#0066cc';
-            clickPopup.style.color = 'white';
-            clickPopup.style.padding = '12px 20px';
-            clickPopup.style.borderRadius = '6px';
-            clickPopup.style.fontSize = '14px';
-            clickPopup.style.zIndex = '10000';
-            clickPopup.style.boxShadow = '0 4px 6px rgba(0,0,0,0.3)';
-            clickPopup.textContent = 'Click to open move';
-            document.body.appendChild(clickPopup);
+            
+            // Create and show new popup button
+            currentMovePopup = document.createElement('button');
+            currentMovePopup.style.position = 'fixed';
+            currentMovePopup.style.bottom = '20px';
+            currentMovePopup.style.left = '20px';
+            currentMovePopup.style.background = '#0066cc';
+            currentMovePopup.style.color = 'white';
+            currentMovePopup.style.padding = '14px 24px';
+            currentMovePopup.style.border = 'none';
+            currentMovePopup.style.borderRadius = '6px';
+            currentMovePopup.style.fontSize = '16px';
+            currentMovePopup.style.fontWeight = '500';
+            currentMovePopup.style.cursor = 'pointer';
+            currentMovePopup.style.zIndex = '10000';
+            currentMovePopup.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
+            currentMovePopup.textContent = moveName + ' Move Info';
+            currentMovePopup.onclick = function() {
+                openMoveProfile(moveName);
+                removeClickPopup();
+            };
+            currentMovePopup.onmouseover = function() {
+                this.style.background = '#0052a3';
+            };
+            currentMovePopup.onmouseout = function() {
+                this.style.background = '#0066cc';
+            };
+            document.body.appendChild(currentMovePopup);
         }
 
         function removeClickPopup() {
-            if (clickPopup) {
-                clickPopup.remove();
-                clickPopup = null;
+            if (currentMovePopup) {
+                currentMovePopup.remove();
+                currentMovePopup = null;
             }
         }
 
-        // Clear clicked move when clicking elsewhere
+        // Clear popup when clicking elsewhere
         document.addEventListener('click', function(e) {
-            if (!e.target.classList.contains('move-name')) {
-                clickedMove = null;
+            if (!e.target.classList.contains('move-name') && !e.target.classList.contains('move')) {
                 removeClickPopup();
             }
         });

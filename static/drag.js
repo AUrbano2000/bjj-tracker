@@ -209,8 +209,8 @@ document.querySelectorAll(".move").forEach(move => {
           // Start long press timer for actual deletion
           longPressTimer = setTimeout(() => {
             removeLongPressPopup();
-            // Remove from map (hide it)
-            move.style.display = 'none';
+            // Remove from map - actually remove the element
+            move.remove();
             dragging = false;
           }, 1500); // 1.5 more seconds after popup shows (2s total)
         }
