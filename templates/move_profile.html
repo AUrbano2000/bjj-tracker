@@ -280,8 +280,12 @@
 
         <div class="notes-section">
             <h2>📝 Notes & Tips</h2>
-            <form method="POST">
-                <textarea name="notes" placeholder="Add your notes, tips, common mistakes, setup details, etc.">{{ profile.notes or '' }}</textarea>
+            <form method="POST" id="notesForm">
+                <div id="notesBox" 
+                     contenteditable="true"
+                     style="min-height: 200px; max-height: 500px; overflow-y: auto; padding: 12px; background: #1a1a1a; border: 1px solid #444; color: white; border-radius: 6px; font-family: inherit; font-size: 14px; margin-bottom: 12px; outline: none; white-space: pre-wrap;"
+                     data-placeholder="Add your notes, tips, common mistakes, setup details, etc.">{{ profile.notes or '' }}</div>
+                <input type="hidden" name="notes" id="notesInput">
                 <input type="hidden" name="hit_count" id="hitCountInput" value="{{ profile.hit_count }}">
                 <button type="submit">💾 Save Notes</button>
             </form>
@@ -433,26 +437,14 @@
         }
 
         // Show success message on form submit
-        document.querySelector('form').addEventListener('submit', function() {
+        const notesBox = document.getElementById('notesBox');
+        document.getElementById('notesForm').addEventListener('submit', function(e) {
+            // Copy contenteditable content to hidden input
+            document.getElementById('notesInput').value = notesBox.innerText;
+            
             setTimeout(() => {
                 showSuccess();
             }, 100);
-        });
-
-        // Double-tap to focus textarea on mobile
-        let lastTapTime = 0;
-        const notesTextarea = document.querySelector('textarea[name="notes"]');
-        notesTextarea.addEventListener('touchend', function(e) {
-            const currentTime = new Date().getTime();
-            const tapTimeDiff = currentTime - lastTapTime;
-            
-            if (tapTimeDiff < 300 && tapTimeDiff > 0) {
-                // Double tap detected
-                e.preventDefault();
-                this.focus();
-                this.click();
-            }
-            lastTapTime = currentTime;
         });
     </script>
 </body>
