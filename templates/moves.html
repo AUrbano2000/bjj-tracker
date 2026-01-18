@@ -707,7 +707,7 @@
 
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
-        <h3>📍 Move Maps</h3>
+        <h3>📍 pyMaps</h3>
         <div class="map-list">
             {% for map in maps %}
                 <div class="map-item {% if map.id == current_map_id %}active{% endif %}" onclick="switchMap({{ map.id }})">
@@ -1133,6 +1133,10 @@
         function startHold(event, moveElement, moveId) {
             if (connectMode) return; // Don't hold while in connect mode
             
+            // Get position from mouse or touch event
+            const clientX = event.touches ? event.touches[0].clientX : event.clientX;
+            const clientY = event.touches ? event.touches[0].clientY : event.clientY;
+            
             const rect = moveElement.getBoundingClientRect();
             const canvas = document.getElementById('canvas');
             const canvasRect = canvas.getBoundingClientRect();
@@ -1143,12 +1147,12 @@
                 moveElement: moveElement,
                 moveId: moveId,
                 startTime: Date.now(),
-                startX: event.clientX,
-                startY: event.clientY,
+                startX: clientX,
+                startY: clientY,
                 timeoutId: null,
                 indicatorElement: null,
-                offsetX: event.clientX - rect.left,
-                offsetY: event.clientY - rect.top,
+                offsetX: clientX - rect.left,
+                offsetY: clientY - rect.top,
                 canvasRect: canvasRect
             };
 
@@ -1215,9 +1219,13 @@
         function onMoveMouseMove(event) {
             if (!holdState.isHolding) return;
 
+            // Get position from mouse or touch event
+            const clientX = event.touches ? event.touches[0].clientX : event.clientX;
+            const clientY = event.touches ? event.touches[0].clientY : event.clientY;
+
             const distance = Math.sqrt(
-                Math.pow(event.clientX - holdState.startX, 2) + 
-                Math.pow(event.clientY - holdState.startY, 2)
+                Math.pow(clientX - holdState.startX, 2) + 
+                Math.pow(clientY - holdState.startY, 2)
             );
 
             // If moved past threshold, start dragging
@@ -1238,8 +1246,8 @@
             // If dragging, update position
             if (holdState.isDragging) {
                 const canvas = document.getElementById('canvas');
-                const newX = event.clientX - holdState.canvasRect.left - holdState.offsetX;
-                const newY = event.clientY - holdState.canvasRect.top - holdState.offsetY;
+                const newX = clientX - holdState.canvasRect.left - holdState.offsetX;
+                const newY = clientY - holdState.canvasRect.top - holdState.offsetY;
                 
                 // Keep within canvas bounds
                 const x = Math.max(0, Math.min(newX, holdState.canvasRect.width - holdState.moveElement.offsetWidth));
@@ -1297,12 +1305,18 @@
                 move.addEventListener('mousedown', (e) => {
                     startHold(e, move, moveId);
                 }, false);
+                
+                move.addEventListener('touchstart', (e) => {
+                    startHold(e, move, moveId);
+                }, false);
             });
         }
 
-        // Attach global mouse listeners for drag tracking
+        // Attach global mouse and touch listeners for drag tracking
         document.addEventListener('mousemove', onMoveMouseMove, false);
         document.addEventListener('mouseup', endHold, false);
+        document.addEventListener('touchmove', onMoveMouseMove, { passive: false });
+        document.addEventListener('touchend', endHold, false);
 
         // Setup line deletion
         function setupLineClickHandlers() {
