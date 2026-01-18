@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ profile.name }} - Move Profile</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, sans-serif;
+            background: #1a1a1a;
+            color: white;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+            color: #0066cc;
+        }
+
+        .stats-section {
+            background: #222;
+            padding: 24px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #333;
+        }
+
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #aaa;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #0066cc;
+        }
+
+        .hit-counter {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .counter-btn {
+            padding: 10px 20px;
+            background: #0066cc;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .counter-btn:hover {
+            background: #0052a3;
+        }
+
+        .counter-btn.increment {
+            background: #00aa44;
+        }
+
+        .counter-btn.increment:hover {
+            background: #008833;
+        }
+
+        .notes-section {
+            background: #222;
+            padding: 24px;
+            border-radius: 8px;
+        }
+
+        .notes-section h2 {
+            margin-bottom: 16px;
+            font-size: 18px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 12px;
+            background: #1a1a1a;
+            border: 1px solid #444;
+            color: white;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 14px;
+            resize: vertical;
+            margin-bottom: 12px;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #0066cc;
+        }
+
+        button[type="submit"] {
+            padding: 10px 24px;
+            background: #0066cc;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        button[type="submit"]:hover {
+            background: #0052a3;
+        }
+
+        .success-message {
+            background: #00aa44;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .graph-section {
+            background: #222;
+            padding: 24px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .graph-section h2 {
+            margin-bottom: 16px;
+            font-size: 18px;
+        }
+
+        canvas {
+            width: 100%;
+            max-width: 100%;
+        }
+
+        .top-nav {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+
+        .nav-button {
+            display: inline-block;
+            padding: 12px 24px;
+            background: white;
+            color: #1a1a1a;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .nav-button:hover {
+            background: #e6e6e6;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-nav">
+        <a href="/moves" class="nav-button">→ Go to Move Map</a>
+    </div>
+    <div class="container">
+        <div class="success-message" id="successMessage">✓ Saved!</div>
+
+        <h1>{{ profile.name }}</h1>
+        <p style="color: #888; margin-bottom: 30px;">Move Profile</p>
+
+        <div class="stats-section">
+            <div class="stat-item">
+                <span class="stat-label">Times Hit Today</span>
+                <div class="hit-counter">
+                    <span class="stat-value" id="hitCount">{{ today_hits }}</span>
+                    <button class="counter-btn increment" onclick="incrementHitCount()">+ Hit It!</button>
+                </div>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Personal Daily Best</span>
+                <span class="stat-value" id="dailyBest">{{ daily_best }}</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Total All-Time Hits</span>
+                <span class="stat-value">{{ profile.hit_count }}</span>
+            </div>
+        </div>
+
+        {% if hit_history %}
+        <div class="graph-section">
+            <h2>📊 Training Sessions Progress</h2>
+            <canvas id="hitGraph"></canvas>
+        </div>
+        {% endif %}
+
+        <div class="notes-section">
+            <h2>📝 Notes & Tips</h2>
+            <form method="POST">
+                <textarea name="notes" placeholder="Add your notes, tips, common mistakes, setup details, etc.">{{ profile.notes or '' }}</textarea>
+                <input type="hidden" name="hit_count" id="hitCountInput" value="{{ profile.hit_count }}">
+                <button type="submit">💾 Save Notes</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let todayHits = {{ today_hits }};
+        let dailyBest = {{ daily_best }};
+
+        {% if hit_history %}
+        // Draw graph - Sessions (X-axis) vs Hits per Session (Y-axis)
+        const canvas = document.getElementById('hitGraph');
+        const ctx = canvas.getContext('2d');
+        
+        // Set canvas size
+        canvas.width = canvas.offsetWidth;
+        canvas.height = 300;
+        
+        const hitData = {{ hit_history | tojson }};
+        
+        // Use the count directly (hits per session, not cumulative)
+        const graphData = hitData.map(item => {
+            return { date: item.date, hits: item.count };
+        });
+        
+        if (graphData.length > 0) {
+            const padding = 50;
+            const graphWidth = canvas.width - padding * 2;
+            const graphHeight = canvas.height - padding * 2;
+            
+            const maxHits = Math.max(...graphData.map(d => d.hits));
+            const xStep = graphWidth / Math.max(1, graphData.length - 1);
+            
+            // Draw axes
+            ctx.strokeStyle = '#444';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(padding, padding);
+            ctx.lineTo(padding, canvas.height - padding);
+            ctx.lineTo(canvas.width - padding, canvas.height - padding);
+            ctx.stroke();
+            
+            // Draw grid lines
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 5; i++) {
+                const y = padding + (graphHeight / 5) * i;
+                ctx.beginPath();
+                ctx.moveTo(padding, y);
+                ctx.lineTo(canvas.width - padding, y);
+                ctx.stroke();
+                
+                // Y-axis labels (hits per session)
+                const value = Math.round(maxHits * (1 - i / 5));
+                ctx.fillStyle = '#888';
+                ctx.font = '12px system-ui';
+                ctx.textAlign = 'right';
+                ctx.fillText(value, padding - 10, y + 4);
+            }
+            
+            // Y-axis label
+            ctx.save();
+            ctx.translate(15, canvas.height / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillStyle = '#aaa';
+            ctx.font = '12px system-ui';
+            ctx.textAlign = 'center';
+            ctx.fillText('Hits per Session', 0, 0);
+            ctx.restore();
+            
+            // Draw line
+            ctx.strokeStyle = '#0066cc';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            
+            graphData.forEach((point, i) => {
+                const x = padding + i * xStep;
+                const y = canvas.height - padding - (point.hits / maxHits) * graphHeight;
+                
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            });
+            
+            ctx.stroke();
+            
+            // Draw points
+            ctx.fillStyle = '#0066cc';
+            graphData.forEach((point, i) => {
+                const x = padding + i * xStep;
+                const y = canvas.height - padding - (point.hits / maxHits) * graphHeight;
+                
+                ctx.beginPath();
+                ctx.arc(x, y, 5, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            
+            // X-axis labels (session numbers)
+            ctx.fillStyle = '#888';
+            ctx.font = '10px system-ui';
+            ctx.textAlign = 'center';
+            const labelStep = Math.ceil(graphData.length / 8);
+            graphData.forEach((point, i) => {
+                if (i % labelStep === 0 || i === graphData.length - 1) {
+                    const x = padding + i * xStep;
+                    ctx.fillText(`#${i + 1}`, x, canvas.height - padding + 20);
+                }
+            });
+            
+            // X-axis label
+            ctx.fillStyle = '#aaa';
+            ctx.font = '12px system-ui';
+            ctx.textAlign = 'center';
+            ctx.fillText('Training Session', canvas.width / 2, canvas.height - 5);
+        }
+        {% endif %}
+
+        function incrementHitCount() {
+            todayHits++;
+            document.getElementById('hitCount').textContent = todayHits;
+            
+            // Update daily best if exceeded
+            if (todayHits > dailyBest) {
+                dailyBest = todayHits;
+                document.getElementById('dailyBest').textContent = dailyBest;
+            }
+
+            fetch('/update_hit_count', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ move_name: '{{ profile.name }}' })
+            }).then(() => {
+                showSuccess();
+            });
+        }
+        function showSuccess() {
+            const msg = document.getElementById('successMessage');
+            msg.classList.add('show');
+            setTimeout(() => {
+                msg.classList.remove('show');
+            }, 2000);
+        }
+
+        // Show success message on form submit
+        document.querySelector('form').addEventListener('submit', function() {
+            setTimeout(() => {
+                showSuccess();
+            }, 100);
+        });
+    </script>
+</body>
+</html>
