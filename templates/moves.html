@@ -2,7 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=5.0\">\n    <title>Moves</title>\n    <link rel=\"manifest\" href=\"{{ url_for('static', filename='manifest.json') }}\">\n    <meta name=\"theme-color\" content=\"#0066cc\">\n    <meta name=\"apple-mobile-web-app-capable\" content=\"yes\">\n    <meta name=\"apple-mobile-web-app-status-bar-style\" content=\"default\">\n    <meta name=\"application-name\" content=\"BJJ Tracker\">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=5.0">
+    <title>Moves</title>
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <meta name="theme-color" content="#0066cc">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="application-name" content="BJJ Tracker">
     <meta name="apple-mobile-web-app-title" content="BJJ Tracker">
     <style>
       * {
@@ -243,6 +249,15 @@
         width: 100%;
         height: calc(100vh - 140px);
         overflow: hidden;
+        background: #1a1a1a;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      #canvas > svg {
+        width: 100% !important;
+        height: 100% !important;
       }
 
       .move {
