@@ -179,6 +179,9 @@
         h1 {
             margin-bottom: 30px;
             font-size: 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .journal-form {
@@ -243,6 +246,24 @@
             background: #222;
             padding: 24px;
             border-radius: 8px;
+        }
+
+        .nav-button {
+            display: inline-block;
+            padding: 12px 24px;
+            background: white;
+            color: #1a1a1a;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .nav-button:hover {
+            background: #e0e0e0;
+            text-decoration: none;
+            transform: translateY(-1px);
         }
 
         .recent-entries h2 {
@@ -392,7 +413,10 @@
 
     <!-- Main Content -->
     <div class="main-content" id="mainContent">
-        <h1>🥋 Jiu Jitsu Journal</h1>
+        <h1>
+            <span>🥋 Jiu Jitsu Journal</span>
+            <a href="/moves" class="nav-button">→ Go to Move Map</a>
+        </h1>
 
         <div class="calendar-section">
             <div class="calendar-header">
@@ -420,8 +444,6 @@
                 <button type="submit">💾 Save Entry</button>
             </form>
         </div>
-
-        <a href="/moves" class="nav-link">→ Go to Move Map</a>
     </div>
 
     <script>
