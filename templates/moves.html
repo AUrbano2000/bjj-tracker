@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Moves</title>
     <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
     <meta name="theme-color" content="#0066cc">
@@ -160,8 +160,23 @@
         z-index: 10;
       }
 
-      header h2 {
+      .header-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
         margin-bottom: 10px;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .header-controls {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+
+      header h2 {
+        margin: 0;
       }
 
       form {
@@ -300,10 +315,7 @@
       }
 
       .top-nav {
-        position: fixed;
-        top: 60px;
-        right: 10px;
-        z-index: 100;
+        display: inline-block;
       }
 
       .nav-button:hover {
@@ -340,17 +352,14 @@
       }
 
       .mode-indicator {
-        position: fixed;
-        top: 10px;
-        right: 10px;
         padding: 8px 12px;
         background: #222;
         border: 1px solid #444;
         border-radius: 4px;
         font-size: 14px;
-        z-index: 1001;
         cursor: pointer;
         user-select: none;
+        white-space: nowrap;
       }
 
       .mode-indicator:hover {
@@ -365,22 +374,32 @@
       /* Mobile Responsive */
       @media (max-width: 768px) {
         header {
-          padding: 15px 15px 15px 60px;
+          padding: 12px 12px 12px 55px;
+        }
+
+        .header-top {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .header-controls {
+          width: 100%;
+          justify-content: space-between;
         }
 
         header h2 {
-          font-size: 18px;
+          font-size: 16px;
         }
 
         #moveInput {
-          max-width: 180px;
-          font-size: 14px;
-          padding: 6px 10px;
+          max-width: 150px;
+          font-size: 13px;
+          padding: 6px 8px;
         }
 
         button {
-          padding: 6px 12px;
-          font-size: 14px;
+          padding: 6px 10px;
+          font-size: 13px;
         }
 
         .sidebar {
@@ -394,20 +413,13 @@
         }
 
         .mode-indicator {
-          top: 5px;
-          right: 5px;
-          padding: 6px 10px;
-          font-size: 12px;
-        }
-
-        .top-nav {
-          top: 35px;
-          right: 5px;
+          padding: 6px 8px;
+          font-size: 11px;
         }
 
         .nav-button {
-          padding: 8px 14px;
-          font-size: 12px;
+          padding: 6px 10px;
+          font-size: 11px;
         }
 
         .move {
@@ -455,14 +467,16 @@
         </div>
     </div>
 
-    <div class="top-nav">
-        <a href="/" class="nav-button">← Back to Journal</a>
-    </div>
-
-    <div class="mode-indicator" id="mode-indicator" onclick="toggleConnectMode()">Drag Mode (Click to Connect)</div>
-    
     <header>
-      <h2>{{ current_map_name }} Move Map</h2>
+      <div class="header-top">
+        <h2>{{ current_map_name }} Move Map</h2>
+        <div class="header-controls">
+          <div class="mode-indicator" id="mode-indicator" onclick="toggleConnectMode()">Drag Mode</div>
+          <div class="top-nav">
+            <a href="/" class="nav-button">← Back to Journal</a>
+          </div>
+        </div>
+      </div>
       <form method="POST" onsubmit="return false;" style="position: relative;">
         <input id="moveInput" name="name" placeholder="Move name" required autocomplete="off"
                oninput="showAutocomplete(this.value)">
