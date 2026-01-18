@@ -439,10 +439,14 @@
             }, 100);
         });
 
-        // Ensure textarea focuses on mobile tap
+        // Ensure textarea focuses on both click and touch
         const notesTextarea = document.querySelector('textarea[name="notes"]');
         if (notesTextarea) {
             notesTextarea.addEventListener('click', function() {
+                this.focus();
+            });
+            notesTextarea.addEventListener('touchend', function(e) {
+                // Don't prevent default - let browser handle it
                 this.focus();
             });
         }
