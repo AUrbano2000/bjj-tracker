@@ -110,7 +110,19 @@ document.querySelectorAll(".move").forEach(move => {
     longPressPopup.style.fontSize = '14px';
     longPressPopup.style.zIndex = '10000';
     longPressPopup.style.whiteSpace = 'nowrap';
-    longPressPopup.textContent = 'Hold to open move information';
+    
+    // Check if in delete mode (check if the mode button text is "Delete Mode")
+    const modeBtn = document.getElementById('modeToggleButton');
+    const isDeleteMode = modeBtn && modeBtn.textContent === 'Delete Mode';
+    
+    if (isDeleteMode) {
+      longPressPopup.textContent = 'Hold to delete this move';
+      longPressPopup.style.background = '#ff4444';
+    } else {
+      longPressPopup.textContent = 'Hold to open up information';
+      longPressPopup.style.background = '#0066cc';
+    }
+    
     document.body.appendChild(longPressPopup);
 
     // Create progress dial
@@ -206,14 +218,25 @@ document.querySelectorAll(".move").forEach(move => {
       showPopupTimer = setTimeout(() => {
         if (!hasMoved) {
           showLongPressPopup();
-          // Start long press timer to open profile
+          // Start long press timer
           longPressTimer = setTimeout(() => {
             removeLongPressPopup();
-            // Open move profile
-            const moveName = move.querySelector('.move-name').textContent;
-            openMoveProfile(moveName);
+            
+            // Check if in delete mode
+            const modeBtn = document.getElementById('modeToggleButton');
+            const isDeleteMode = modeBtn && modeBtn.textContent === 'Delete Mode';
+            
+            if (isDeleteMode) {
+              // Delete the move
+              move.remove();
+            } else {
+              // Open move profile (navigate like a link)
+              const moveName = move.querySelector('.move-name').textContent;
+              window.location.href = `/move_profile/${encodeURIComponent(moveName)}`;
+            }
+            
             dragging = false;
-          }, 1150); // 1.15 more seconds after popup shows (1.5s total)
+          }, 1650); // 1.65 more seconds after popup shows (2s total)
         }
       }, 350);
     }
