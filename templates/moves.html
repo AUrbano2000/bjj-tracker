@@ -940,14 +940,11 @@
                 const toMove = document.querySelector(`[data-id="${toId}"]`);
                 
                 if (fromMove && toMove) {
-                    const fromRect = fromMove.getBoundingClientRect();
-                    const toRect = toMove.getBoundingClientRect();
-                    const canvasRect = document.getElementById('canvas').getBoundingClientRect();
-                    
-                    const x1 = fromRect.left - canvasRect.left + fromRect.width / 2;
-                    const y1 = fromRect.top - canvasRect.top + fromRect.height / 2;
-                    const x2 = toRect.left - canvasRect.left + toRect.width / 2;
-                    const y2 = toRect.top - canvasRect.top + toRect.height / 2;
+                    // Use style.left and style.top (canvas-relative coordinates)
+                    const x1 = parseFloat(fromMove.style.left) + fromMove.offsetWidth / 2;
+                    const y1 = parseFloat(fromMove.style.top) + fromMove.offsetHeight / 2;
+                    const x2 = parseFloat(toMove.style.left) + toMove.offsetWidth / 2;
+                    const y2 = parseFloat(toMove.style.top) + toMove.offsetHeight / 2;
                     
                     line.setAttribute('x1', x1);
                     line.setAttribute('y1', y1);
