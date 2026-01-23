@@ -363,10 +363,10 @@
            ============================================ */
         #canvas {
             position: relative;
-            width: 100%;
-            height: calc(100vh - 140px);
+            width: 200%;
+            height: 200%;
             margin-top: 140px;
-            overflow: hidden;
+            overflow: visible;
             background: #1a1a1a;
             transform-origin: 0 0;
             transition: transform 0.05s ease-out;
@@ -1301,9 +1301,9 @@
                 const newX = clientX - holdState.canvasRect.left - holdState.offsetX;
                 const newY = clientY - holdState.canvasRect.top - holdState.offsetY;
                 
-                // Keep within canvas bounds
-                const x = Math.max(0, Math.min(newX, holdState.canvasRect.width - holdState.moveElement.offsetWidth));
-                const y = Math.max(0, Math.min(newY, holdState.canvasRect.height - holdState.moveElement.offsetHeight));
+                // Allow dragging outside canvas bounds
+                const x = newX;
+                const y = newY;
                 
                 holdState.moveElement.style.left = x + 'px';
                 holdState.moveElement.style.top = y + 'px';
