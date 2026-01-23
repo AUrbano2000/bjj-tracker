@@ -368,6 +368,8 @@
             margin-top: 140px;
             overflow: hidden;
             background: #1a1a1a;
+            transform-origin: 0 0;
+            transition: transform 0.05s ease-out;
         }
 
         #lines-layer {
@@ -1428,6 +1430,83 @@
         if (window.navigator.standalone === true) {
             console.log('Running in PWA standalone mode');
         }
+
+        // ============================================
+        // ZOOM & PAN CONTROLS
+        // ============================================
+        let zoomState = {
+            zoomLevel: 1,
+            panX: 0,
+            panY: 0,
+            initialDistance: 0,
+            initialZoom: 1,
+            isTwoFinger: false,
+            lastTouchX: 0,
+            lastTouchY: 0
+        };
+
+        function getDistance(touch1, touch2) {
+            const dx = touch1.clientX - touch2.clientX;
+            const dy = touch1.clientY - touch2.clientY;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+
+        function updateCanvasTransform() {
+            const canvas = document.getElementById('canvas');
+            canvas.style.transform = `scale(${zoomState.zoomLevel}) translate(${zoomState.panX}px, ${zoomState.panY}px)`;
+        }
+
+        function handleCanvasZoomPan(event) {
+            if (event.touches.length === 2) {
+                event.preventDefault();
+                
+                const touch1 = event.touches[0];
+                const touch2 = event.touches[1];
+                const currentDistance = getDistance(touch1, touch2);
+                const centerX = (touch1.clientX + touch2.clientX) / 2;
+                const centerY = (touch1.clientY + touch2.clientY) / 2;
+
+                if (event.type === 'touchstart') {
+                    zoomState.isTwoFinger = true;
+                    zoomState.initialDistance = currentDistance;
+                    zoomState.initialZoom = zoomState.zoomLevel;
+                    zoomState.lastTouchX = centerX;
+                    zoomState.lastTouchY = centerY;
+                } else if (event.type === 'touchmove' && zoomState.isTwoFinger) {
+                    // Pinch zoom
+                    const scale = currentDistance / zoomState.initialDistance;
+                    zoomState.zoomLevel = Math.max(0.5, Math.min(3, zoomState.initialZoom * scale));
+
+                    // Two-finger pan
+                    const deltaX = centerX - zoomState.lastTouchX;
+                    const deltaY = centerY - zoomState.lastTouchY;
+                    zoomState.panX += deltaX / zoomState.zoomLevel;
+                    zoomState.panY += deltaY / zoomState.zoomLevel;
+
+                    zoomState.lastTouchX = centerX;
+                    zoomState.lastTouchY = centerY;
+
+                    updateCanvasTransform();
+                }
+            } else if (event.touches.length === 1) {
+                if (event.type === 'touchstart') {
+                    zoomState.isTwoFinger = false;
+                }
+            }
+        }
+
+        function handleCanvasZoomPanEnd(event) {
+            if (event.touches.length < 2) {
+                zoomState.isTwoFinger = false;
+                zoomState.initialDistance = 0;
+            }
+        }
+
+        // Attach zoom/pan listeners
+        const canvas = document.getElementById('canvas');
+        canvas.addEventListener('touchstart', handleCanvasZoomPan, { passive: false });
+        canvas.addEventListener('touchmove', handleCanvasZoomPan, { passive: false });
+        canvas.addEventListener('touchend', handleCanvasZoomPanEnd, { passive: false });
     </script>
 </body>
 </html>
